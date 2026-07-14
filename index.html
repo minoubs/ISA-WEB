@@ -30,9 +30,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Anime.js Integration -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
         }
         /* Custom hide scrollbars but keep functionality */
         .no-scrollbar::-webkit-scrollbar {
@@ -50,22 +54,42 @@
         .animate-scroll {
             display: flex;
             width: max-content;
-            animation: scroll 30s linear infinite;
+            animation: scroll 35s linear infinite;
         }
         .animate-scroll:hover {
             animation-play-state: paused;
+        }
+        /* Glassmorphism utility */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        /* Custom interactive background canvas glow */
+        .glow-orb {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0, 168, 150, 0.15) 0%, rgba(15, 76, 129, 0) 70%);
+            pointer-events: none;
+            z-index: 1;
         }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-teal-500 selection:text-slate-950">
 
+    <div id="ambient-glow-1" class="glow-orb" style="top: 10%; left: -10%;"></div>
+    <div id="ambient-glow-2" class="glow-orb" style="top: 50%; right: -10%;"></div>
+
     <!-- Header Navigation -->
-    <header class="sticky top-0 z-40 bg-slate-950/80 backdrop-blur-md border-b border-slate-800">
+    <header class="sticky top-0 z-40 bg-slate-950/80 backdrop-blur-md border-b border-slate-900">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-20">
                 <!-- Logo & Brand -->
                 <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('home')">
-                    <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-teal-500 to-blue-600 flex items-center justify-center shadow-lg shadow-teal-500/20">
+                    <div id="nav-logo" class="w-12 h-12 rounded-xl bg-gradient-to-tr from-teal-500 to-blue-600 flex items-center justify-center shadow-lg shadow-teal-500/25">
                         <span class="text-white font-extrabold text-xl tracking-wider">ISA</span>
                     </div>
                     <div>
@@ -100,7 +124,7 @@
         </div>
 
         <!-- Mobile Nav Menu Dropdown -->
-        <div id="mobile-menu" class="hidden md:hidden bg-slate-950 border-b border-slate-800 transition-all duration-300">
+        <div id="mobile-menu" class="hidden md:hidden bg-slate-950 border-b border-slate-900 transition-all duration-300">
             <div class="px-2 pt-2 pb-4 space-y-1 sm:px-3">
                 <button onclick="switchTab('home')" class="mobile-nav-link block w-full text-left px-4 py-3 rounded-lg text-base font-medium text-teal-400 bg-slate-900" data-tab="home">Home</button>
                 <button onclick="switchTab('initiatives')" class="mobile-nav-link block w-full text-left px-4 py-3 rounded-lg text-base font-medium text-slate-400 hover:text-white hover:bg-slate-900/50" data-tab="initiatives">Initiatives Hub</button>
@@ -120,15 +144,14 @@
     <div id="toast-container" class="fixed top-24 right-6 z-50 pointer-events-none space-y-2"></div>
 
     <!-- Main Content Area representing the 5 principal pages -->
-    <main class="flex-grow">
+    <main class="flex-grow z-10 relative">
 
         <!-- ================= PAGE 1: HOME ================= -->
         <section id="home-view" class="tab-view block">
-            <!-- Hero Spotlight -->
-            <div class="relative overflow-hidden pt-12 pb-24 lg:pt-20 lg:pb-32 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(0,168,150,0.15),rgba(255,255,255,0))]">
+            <div class="relative overflow-hidden pt-12 pb-24 lg:pt-20 lg:pb-32 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(0,168,150,0.12),rgba(255,255,255,0))]">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                        <div class="lg:col-span-7 text-center lg:text-left">
+                        <div class="lg:col-span-7 text-center lg:text-left text-block">
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-teal-500/10 text-teal-300 border border-teal-500/20 mb-6 uppercase tracking-wider">
                                 <i class="fa-solid fa-circle-nodes mr-1.5 animate-pulse"></i> Empowering Future Automation
                             </span>
@@ -150,7 +173,7 @@
                         </div>
                         
                         <!-- Isaac 2026 Magazine Card Promo (Element: Isaac 2026) -->
-                        <div class="lg:col-span-5 flex justify-center">
+                        <div class="lg:col-span-5 flex justify-center promo-card-block">
                             <div class="relative group">
                                 <div class="absolute -inset-1 rounded-2xl bg-gradient-to-r from-teal-500 to-blue-600 opacity-30 blur-xl group-hover:opacity-50 transition duration-1000"></div>
                                 <div class="relative bg-slate-900 border border-slate-800 p-6 rounded-2xl max-w-sm shadow-2xl transition duration-500 hover:scale-105">
@@ -180,7 +203,6 @@
                 </div>
             </div>
 
-            <!-- Vision & Mission (Element: Vision & Mission) -->
             <div class="py-20 bg-slate-900/50 border-t border-b border-slate-900">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="text-center max-w-3xl mx-auto mb-16">
@@ -191,9 +213,9 @@
                         </p>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 animate-stagger-group">
                         <!-- Vision -->
-                        <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-8 rounded-2xl border border-slate-800 relative overflow-hidden group">
+                        <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-8 rounded-2xl border border-slate-800 relative overflow-hidden group hover:border-teal-500/30 transition-all duration-300">
                             <div class="absolute -right-8 -top-8 w-24 h-24 bg-teal-500/5 rounded-full blur-xl group-hover:bg-teal-500/10 transition-colors"></div>
                             <div class="w-12 h-12 rounded-xl bg-teal-500/10 border border-teal-500/30 flex items-center justify-center text-teal-400 mb-6 text-xl">
                                 <i class="fa-solid fa-eye"></i>
@@ -205,7 +227,7 @@
                         </div>
 
                         <!-- Mission -->
-                        <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-8 rounded-2xl border border-slate-800 relative overflow-hidden group">
+                        <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-8 rounded-2xl border border-slate-800 relative overflow-hidden group hover:border-blue-500/30 transition-all duration-300">
                             <div class="absolute -right-8 -top-8 w-24 h-24 bg-blue-500/5 rounded-full blur-xl group-hover:bg-blue-500/10 transition-colors"></div>
                             <div class="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400 mb-6 text-xl">
                                 <i class="fa-solid fa-bullseye"></i>
@@ -232,7 +254,7 @@
                         </button>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 animate-stagger-group">
                         <!-- Featured Img 1 -->
                         <div class="group relative aspect-video sm:aspect-square rounded-xl overflow-hidden shadow-lg border border-slate-800 cursor-pointer" onclick="switchTabAndFilterGallery('community')">
                             <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=400" onerror="this.src='https://placehold.co/400x400/1e293b/00a896?text=Robotics+Workshop'" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="Robotics Workshop">
@@ -273,16 +295,13 @@
                 </div>
             </div>
 
-            <!-- Sponsors & PRO Ticker Section (Element: PRO & Sponsors) -->
             <div class="py-12 bg-slate-900 border-t border-slate-800 overflow-hidden relative">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
                     <h3 class="text-center text-xs font-semibold uppercase tracking-widest text-slate-400">Our Trusted Collaborators & Strategic Partners</h3>
                 </div>
                 
-                <!-- Infinite horizontal sliding marquee -->
                 <div class="flex select-none">
                     <div class="animate-scroll flex gap-12 items-center text-slate-400 font-extrabold text-2xl tracking-widest">
-                        <!-- Duplicate content to ensure smooth seamless loop -->
                         <span class="flex items-center gap-2"><i class="fa-solid fa-bolt text-teal-400 text-lg"></i> SIEMENS</span>
                         <span class="flex items-center gap-2"><i class="fa-solid fa-atom text-blue-400 text-lg"></i> ROCKWELL</span>
                         <span class="flex items-center gap-2"><i class="fa-solid fa-network-wired text-purple-400 text-lg"></i> HONEYWELL</span>
@@ -324,8 +343,7 @@
                     </div>
                 </div>
 
-                <!-- SUB-TAB CONTENT 1: RUNNING PROJECTS (Element: Running Projects Tab) -->
-                <div id="init-content-projects" class="block animate-fadeIn">
+                <div id="init-content-projects" class="block">
                     <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
                         <div class="relative w-full md:max-w-sm">
                             <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
@@ -342,7 +360,7 @@
                     </div>
 
                     <!-- Projects Grid -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="projectsGrid">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-stagger-group" id="projectsGrid">
                         <!-- Project Card 1 -->
                         <div class="project-card bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden hover:border-slate-700 transition-all flex flex-col h-full" data-category="IoT" data-name="smart water management grid">
                             <div class="h-48 relative overflow-hidden bg-slate-950">
@@ -411,8 +429,7 @@
                     </div>
                 </div>
 
-                <!-- SUB-TAB CONTENT 2: EVENTS TAB (Element: Event Tab) -->
-                <div id="init-content-events" class="hidden animate-fadeIn">
+                <div id="init-content-events" class="hidden">
                     <div class="space-y-6">
                         <!-- Upcoming Highlight -->
                         <div class="bg-gradient-to-r from-blue-900/40 to-teal-900/40 border border-teal-500/30 p-6 sm:p-8 rounded-2xl flex flex-col lg:flex-row items-center justify-between gap-6 mb-10">
@@ -434,7 +451,7 @@
 
                         <!-- General Events Timeline -->
                         <h4 class="text-lg font-bold text-white mb-6">Upcoming Chapter Calendar</h4>
-                        <div class="space-y-4">
+                        <div class="space-y-4 animate-stagger-group">
                             <!-- Event 1 -->
                             <div class="bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-xl p-6 transition-all flex flex-col sm:flex-row items-center justify-between gap-4">
                                 <div class="flex items-start gap-4 w-full">
@@ -474,9 +491,8 @@
                     </div>
                 </div>
 
-                <!-- SUB-TAB CONTENT 3: ISA ARTICLES (Element: ISA Articles) -->
-                <div id="init-content-articles" class="hidden animate-fadeIn">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div id="init-content-articles" class="hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-stagger-group">
                         <!-- Article 1 -->
                         <article class="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden flex flex-col h-full hover:scale-[1.02] transition-transform duration-300">
                             <div class="h-44 bg-slate-950 overflow-hidden">
@@ -513,9 +529,9 @@
                                     <h3 class="text-lg font-bold text-white mb-2 hover:text-teal-400 transition-colors">Designing Reliable Modbus Networks</h3>
                                     <p class="text-sm text-slate-400 line-clamp-3">A practical field-guide on setting up physical industrial bus lines safely, detailing noise filters, resistor networks, and signal calibration.</p>
                                 </div>
-                                <a href="javascript:void(0)" onclick="showToast('Article downloaded successfully as PDF!', 'success')" class="text-teal-400 hover:text-teal-300 text-xs font-bold flex items-center gap-1 mt-6">
+                                <button onclick="triggerFileDownload('Modbus_Network_Design_Guide.pdf')" class="text-teal-400 hover:text-teal-300 text-xs font-bold flex items-center gap-1 mt-6">
                                     Download PDF Guide <i class="fa-solid fa-download text-[10px]"></i>
-                                </a>
+                                </button>
                             </div>
                         </article>
 
@@ -549,17 +565,17 @@
         <section id="community-view" class="tab-view hidden py-12">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 
-                <!-- 1. Faculty Advisory Board (Element: 3 Faculty Advisors) -->
                 <div class="mb-20">
                     <div class="text-center max-w-3xl mx-auto mb-12">
                         <span class="text-teal-400 text-xs font-extrabold uppercase tracking-widest">Institutional Pillars</span>
                         <h2 class="text-3xl font-extrabold text-white mt-1">Faculty Advisory Board</h2>
-                        <p class="text-slate-400 text-sm mt-2">Guiding our students with outstanding technical expertise, research experience, and continuous mentorship.</p>
+                        <div class="w-16 h-1 bg-teal-500 mx-auto mt-4 rounded-full"></div>
+                        <p class="text-slate-400 text-sm mt-3">Guiding our students with outstanding technical expertise, research experience, and continuous mentorship.</p>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 animate-stagger-group">
                         <!-- Faculty Advisor 1 -->
-                        <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-2xl border border-teal-500/20 text-center relative overflow-hidden shadow-xl">
+                        <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-2xl border border-teal-500/20 text-center relative overflow-hidden shadow-xl hover:border-teal-500/40 transition-all duration-300">
                             <div class="absolute inset-0 bg-gradient-to-b from-teal-500/5 to-transparent"></div>
                             <div class="w-28 h-28 rounded-full overflow-hidden mx-auto mb-5 border-4 border-slate-900 ring-2 ring-teal-500/30">
                                 <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=300" onerror="this.src='https://placehold.co/300x300/1e293b/00a896?text=Dr.+Arlene+Peterson'" class="w-full h-full object-cover" alt="Dr. Arlene Peterson">
@@ -569,13 +585,14 @@
                             <p class="text-xs text-slate-500 mt-2">Dean of Robotics & Systems Research, with over 18 years of automated systems architecture expertise.</p>
                             
                             <div class="flex justify-center gap-3 mt-4 text-slate-400">
-                                <a href="javascript:void(0)" onclick="showToast('Connecting with Dr. Arlene Peterson...')" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-linkedin text-base"></i></a>
+                                <a href="https://linkedin.com" target="_blank" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-linkedin text-base"></i></a>
+                                <a href="https://instagram.com" target="_blank" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-instagram text-base"></i></a>
                                 <a href="mailto:advisor1@example.edu" class="hover:text-teal-400 transition-colors"><i class="fa-solid fa-envelope text-base"></i></a>
                             </div>
                         </div>
 
                         <!-- Faculty Advisor 2 -->
-                        <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-2xl border border-teal-500/20 text-center relative overflow-hidden shadow-xl">
+                        <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-2xl border border-teal-500/20 text-center relative overflow-hidden shadow-xl hover:border-teal-500/40 transition-all duration-300">
                             <div class="absolute inset-0 bg-gradient-to-b from-teal-500/5 to-transparent"></div>
                             <div class="w-28 h-28 rounded-full overflow-hidden mx-auto mb-5 border-4 border-slate-900 ring-2 ring-teal-500/30">
                                 <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=300" onerror="this.src='https://placehold.co/300x300/1e293b/00a896?text=Prof.+Rajesh+Kumar'" class="w-full h-full object-cover" alt="Prof. Rajesh Kumar">
@@ -585,13 +602,14 @@
                             <p class="text-xs text-slate-500 mt-2">Senior Faculty in Process Automation Systems, bridging students directly with core industrial players.</p>
                             
                             <div class="flex justify-center gap-3 mt-4 text-slate-400">
-                                <a href="javascript:void(0)" onclick="showToast('Connecting with Prof. Rajesh Kumar...')" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-linkedin text-base"></i></a>
+                                <a href="https://linkedin.com" target="_blank" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-linkedin text-base"></i></a>
+                                <a href="https://instagram.com" target="_blank" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-instagram text-base"></i></a>
                                 <a href="mailto:advisor2@example.edu" class="hover:text-teal-400 transition-colors"><i class="fa-solid fa-envelope text-base"></i></a>
                             </div>
                         </div>
 
                         <!-- Faculty Advisor 3 -->
-                        <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-2xl border border-teal-500/20 text-center relative overflow-hidden shadow-xl">
+                        <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-2xl border border-teal-500/20 text-center relative overflow-hidden shadow-xl hover:border-teal-500/40 transition-all duration-300">
                             <div class="absolute inset-0 bg-gradient-to-b from-teal-500/5 to-transparent"></div>
                             <div class="w-28 h-28 rounded-full overflow-hidden mx-auto mb-5 border-4 border-slate-900 ring-2 ring-teal-500/30">
                                 <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=300" onerror="this.src='https://placehold.co/300x300/1e293b/00a896?text=Dr.+Sarah+Jenkins'" class="w-full h-full object-cover" alt="Dr. Sarah Jenkins">
@@ -601,109 +619,499 @@
                             <p class="text-xs text-slate-500 mt-2">Embedded Systems Researcher, guiding physical mechanics prototyping and software development loops.</p>
                             
                             <div class="flex justify-center gap-3 mt-4 text-slate-400">
-                                <a href="javascript:void(0)" onclick="showToast('Connecting with Dr. Sarah Jenkins...')" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-linkedin text-base"></i></a>
+                                <a href="https://linkedin.com" target="_blank" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-linkedin text-base"></i></a>
+                                <a href="https://instagram.com" target="_blank" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-instagram text-base"></i></a>
                                 <a href="mailto:advisor3@example.edu" class="hover:text-teal-400 transition-colors"><i class="fa-solid fa-envelope text-base"></i></a>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 2. ISA Core Council (Element: ISA Core) -->
                 <div class="mb-20">
                     <div class="text-center max-w-3xl mx-auto mb-12">
-                        <span class="text-teal-400 text-xs font-extrabold uppercase tracking-widest">Student Executive Committee</span>
-                        <h2 class="text-3xl font-extrabold text-white mt-1">ISA Core Team</h2>
-                        <p class="text-slate-400 text-sm mt-2">A passionate collective of engineers, coders, and public relationship managers steering daily operations.</p>
+                        <span class="text-teal-400 text-xs font-extrabold uppercase tracking-widest">Leadership Team</span>
+                        <h2 class="text-3xl font-extrabold text-white mt-1">Executive Core Council</h2>
+                        <div class="w-16 h-1 bg-teal-500 mx-auto mt-4 rounded-full"></div>
+                        <p class="text-slate-400 text-sm mt-3">The governing student officers spearheading development, public relations, and operational integrity.</p>
                     </div>
 
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                        <!-- Core Card 1 -->
-                        <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 text-center hover:border-slate-700 transition-all">
-                            <div class="w-20 h-20 rounded-xl overflow-hidden mx-auto mb-4 bg-slate-950">
-                                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200" onerror="this.src='https://placehold.co/200x200/1e293b/00a896?text=Jane+Doe'" class="w-full h-full object-cover" alt="President Photo">
+                    <!-- 8 Core Spaces Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 animate-stagger-group">
+                        <!-- Space 1 -->
+                        <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-2xl border border-teal-500/10 text-center relative overflow-hidden shadow-xl hover:border-teal-500/30 transition-all duration-300">
+                            <div class="absolute inset-0 bg-gradient-to-b from-teal-500/5 to-transparent"></div>
+                            <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-teal-500 to-blue-600 flex items-center justify-center mx-auto mb-4 border-4 border-slate-900 ring-2 ring-teal-500/20 shadow-lg">
+                                <span class="text-white font-extrabold text-xl">ISA</span>
                             </div>
-                            <h4 class="font-bold text-white text-sm">Jane Doe</h4>
-                            <p class="text-[11px] text-teal-400 font-medium">President</p>
+                            <h4 class="text-base font-bold text-white">To Be Announced</h4>
+                            <p class="text-xs text-teal-400 font-semibold uppercase tracking-wider mt-1">President</p>
+                            <p class="text-[11px] text-slate-500 mt-2">Executive steering, strategic institutional growth and external liaison.</p>
+                            <div class="flex justify-center gap-3 mt-4 text-slate-400">
+                                <a href="https://linkedin.com" target="_blank" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-linkedin"></i></a>
+                                <a href="https://instagram.com" target="_blank" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-instagram"></i></a>
+                            </div>
                         </div>
-                        <!-- Core Card 2 -->
-                        <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 text-center hover:border-slate-700 transition-all">
-                            <div class="w-20 h-20 rounded-xl overflow-hidden mx-auto mb-4 bg-slate-950">
-                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200" onerror="this.src='https://placehold.co/200x200/1e293b/00a896?text=Liam+Nixon'" class="w-full h-full object-cover" alt="Vice President Photo">
+
+                        <!-- Space 2 -->
+                        <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-2xl border border-teal-500/10 text-center relative overflow-hidden shadow-xl hover:border-teal-500/30 transition-all duration-300">
+                            <div class="absolute inset-0 bg-gradient-to-b from-teal-500/5 to-transparent"></div>
+                            <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-teal-500 to-blue-600 flex items-center justify-center mx-auto mb-4 border-4 border-slate-900 ring-2 ring-teal-500/20 shadow-lg">
+                                <span class="text-white font-extrabold text-xl">ISA</span>
                             </div>
-                            <h4 class="font-bold text-white text-sm">Liam Nixon</h4>
-                            <p class="text-[11px] text-teal-400 font-medium">Vice President</p>
+                            <h4 class="text-base font-bold text-white">To Be Announced</h4>
+                            <p class="text-xs text-teal-400 font-semibold uppercase tracking-wider mt-1">Vice President</p>
+                            <p class="text-[11px] text-slate-500 mt-2">Coordinating sub-domain activities and operational project flows.</p>
+                            <div class="flex justify-center gap-3 mt-4 text-slate-400">
+                                <a href="https://linkedin.com" target="_blank" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-linkedin"></i></a>
+                                <a href="https://instagram.com" target="_blank" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-instagram"></i></a>
+                            </div>
                         </div>
-                        <!-- Core Card 3 -->
-                        <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 text-center hover:border-slate-700 transition-all">
-                            <div class="w-20 h-20 rounded-xl overflow-hidden mx-auto mb-4 bg-slate-950">
-                                <img src="https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?auto=format&fit=crop&q=80&w=200" onerror="this.src='https://placehold.co/200x200/1e293b/00a896?text=Raj+Mehta'" class="w-full h-full object-cover" alt="Technical Head Photo">
+
+                        <!-- Space 3 -->
+                        <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-2xl border border-teal-500/10 text-center relative overflow-hidden shadow-xl hover:border-teal-500/30 transition-all duration-300">
+                            <div class="absolute inset-0 bg-gradient-to-b from-teal-500/5 to-transparent"></div>
+                            <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-teal-500 to-blue-600 flex items-center justify-center mx-auto mb-4 border-4 border-slate-900 ring-2 ring-teal-500/20 shadow-lg">
+                                <span class="text-white font-extrabold text-xl">ISA</span>
                             </div>
-                            <h4 class="font-bold text-white text-sm">Raj Mehta</h4>
-                            <p class="text-[11px] text-teal-400 font-medium">Technical Lead</p>
+                            <h4 class="text-base font-bold text-white">To Be Announced</h4>
+                            <p class="text-xs text-teal-400 font-semibold uppercase tracking-wider mt-1">General Secretary</p>
+                            <p class="text-[11px] text-slate-500 mt-2">Managing structural assets, permissions, and administrative records.</p>
+                            <div class="flex justify-center gap-3 mt-4 text-slate-400">
+                                <a href="https://linkedin.com" target="_blank" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-linkedin"></i></a>
+                                <a href="https://instagram.com" target="_blank" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-instagram"></i></a>
+                            </div>
                         </div>
-                        <!-- Core Card 4 -->
-                        <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 text-center hover:border-slate-700 transition-all">
-                            <div class="w-20 h-20 rounded-xl overflow-hidden mx-auto mb-4 bg-slate-950">
-                                <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=200" onerror="this.src='https://placehold.co/200x200/1e293b/00a896?text=Alia+Sen'" class="w-full h-full object-cover" alt="Public Relations Head Photo">
+
+                        <!-- Space 4 -->
+                        <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-2xl border border-teal-500/10 text-center relative overflow-hidden shadow-xl hover:border-teal-500/30 transition-all duration-300">
+                            <div class="absolute inset-0 bg-gradient-to-b from-teal-500/5 to-transparent"></div>
+                            <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-teal-500 to-blue-600 flex items-center justify-center mx-auto mb-4 border-4 border-slate-900 ring-2 ring-teal-500/20 shadow-lg">
+                                <span class="text-white font-extrabold text-xl">ISA</span>
                             </div>
-                            <h4 class="font-bold text-white text-sm">Alia Sen</h4>
-                            <p class="text-[11px] text-teal-400 font-medium">PR & Marketing Head</p>
+                            <h4 class="text-base font-bold text-white">To Be Announced</h4>
+                            <p class="text-xs text-teal-400 font-semibold uppercase tracking-wider mt-1">Treasurer</p>
+                            <p class="text-[11px] text-slate-500 mt-2">Overseeing budgetary allocations, event financing, and accounts.</p>
+                            <div class="flex justify-center gap-3 mt-4 text-slate-400">
+                                <a href="https://linkedin.com" target="_blank" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-linkedin"></i></a>
+                                <a href="https://instagram.com" target="_blank" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-instagram"></i></a>
+                            </div>
+                        </div>
+
+                        <!-- Space 5 -->
+                        <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-2xl border border-teal-500/10 text-center relative overflow-hidden shadow-xl hover:border-teal-500/30 transition-all duration-300">
+                            <div class="absolute inset-0 bg-gradient-to-b from-teal-500/5 to-transparent"></div>
+                            <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-teal-500 to-blue-600 flex items-center justify-center mx-auto mb-4 border-4 border-slate-900 ring-2 ring-teal-500/20 shadow-lg">
+                                <span class="text-white font-extrabold text-xl">ISA</span>
+                            </div>
+                            <h4 class="text-base font-bold text-white">To Be Announced</h4>
+                            <p class="text-xs text-teal-400 font-semibold uppercase tracking-wider mt-1">Joint Secretary</p>
+                            <p class="text-[11px] text-slate-500 mt-2">Supporting internal secretarial audits and institutional reporting.</p>
+                            <div class="flex justify-center gap-3 mt-4 text-slate-400">
+                                <a href="https://linkedin.com" target="_blank" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-linkedin"></i></a>
+                                <a href="https://instagram.com" target="_blank" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-instagram"></i></a>
+                            </div>
+                        </div>
+
+                        <!-- Space 6 -->
+                        <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-2xl border border-teal-500/10 text-center relative overflow-hidden shadow-xl hover:border-teal-500/30 transition-all duration-300">
+                            <div class="absolute inset-0 bg-gradient-to-b from-teal-500/5 to-transparent"></div>
+                            <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-teal-500 to-blue-600 flex items-center justify-center mx-auto mb-4 border-4 border-slate-900 ring-2 ring-teal-500/20 shadow-lg">
+                                <span class="text-white font-extrabold text-xl">ISA</span>
+                            </div>
+                            <h4 class="text-base font-bold text-white">To Be Announced</h4>
+                            <p class="text-xs text-teal-400 font-semibold uppercase tracking-wider mt-1">Public Relations Officer</p>
+                            <p class="text-[11px] text-slate-500 mt-2">Managing inter-society communication, collabs, and community image.</p>
+                            <div class="flex justify-center gap-3 mt-4 text-slate-400">
+                                <a href="https://linkedin.com" target="_blank" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-linkedin"></i></a>
+                                <a href="https://instagram.com" target="_blank" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-instagram"></i></a>
+                            </div>
+                        </div>
+
+                        <!-- Space 7 -->
+                        <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-2xl border border-teal-500/10 text-center relative overflow-hidden shadow-xl hover:border-teal-500/30 transition-all duration-300">
+                            <div class="absolute inset-0 bg-gradient-to-b from-teal-500/5 to-transparent"></div>
+                            <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-teal-500 to-blue-600 flex items-center justify-center mx-auto mb-4 border-4 border-slate-900 ring-2 ring-teal-500/20 shadow-lg">
+                                <span class="text-white font-extrabold text-xl">ISA</span>
+                            </div>
+                            <h4 class="text-base font-bold text-white">To Be Announced</h4>
+                            <p class="text-xs text-teal-400 font-semibold uppercase tracking-wider mt-1">Technical Head</p>
+                            <p class="text-[11px] text-slate-500 mt-2">Steering continuous technical lab deployments and hardware builds.</p>
+                            <div class="flex justify-center gap-3 mt-4 text-slate-400">
+                                <a href="https://linkedin.com" target="_blank" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-linkedin"></i></a>
+                                <a href="https://instagram.com" target="_blank" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-instagram"></i></a>
+                            </div>
+                        </div>
+
+                        <!-- Space 8 -->
+                        <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-2xl border border-teal-500/10 text-center relative overflow-hidden shadow-xl hover:border-teal-500/30 transition-all duration-300">
+                            <div class="absolute inset-0 bg-gradient-to-b from-teal-500/5 to-transparent"></div>
+                            <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-teal-500 to-blue-600 flex items-center justify-center mx-auto mb-4 border-4 border-slate-900 ring-2 ring-teal-500/20 shadow-lg">
+                                <span class="text-white font-extrabold text-xl">ISA</span>
+                            </div>
+                            <h4 class="text-base font-bold text-white">To Be Announced</h4>
+                            <p class="text-xs text-teal-400 font-semibold uppercase tracking-wider mt-1">Creative Head</p>
+                            <p class="text-[11px] text-slate-500 mt-2">Managing overall design layouts, templates, branding, and event themes.</p>
+                            <div class="flex justify-center gap-3 mt-4 text-slate-400">
+                                <a href="https://linkedin.com" target="_blank" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-linkedin"></i></a>
+                                <a href="https://instagram.com" target="_blank" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-instagram"></i></a>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 4. Full Photo Gallery with interactive JS filters (Element: Full Photo Gallery) -->
+                
+                <!-- DOMAIN A: TECHNICAL TEAM -->
                 <div class="mb-20">
-                    <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
-                        <div>
-                            <h2 class="text-3xl font-extrabold text-white">Full Photo Gallery Archive</h2>
-                            <p class="text-slate-400 text-sm mt-1">Explore our milestones, creative art displays, and factory visits.</p>
-                        </div>
-                        <div class="flex gap-2 w-full md:w-auto overflow-x-auto no-scrollbar">
-                            <button onclick="filterGallery('all')" class="gallery-filter-btn px-4 py-2 bg-teal-500 text-slate-950 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors" id="filter-btn-all">All Photos</button>
-                            <button onclick="filterGallery('workshops')" class="gallery-filter-btn px-4 py-2 bg-slate-900 text-slate-400 border border-slate-800 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors hover:text-white" id="filter-btn-workshops">Workshops</button>
-                            <button onclick="filterGallery('festivals')" class="gallery-filter-btn px-4 py-2 bg-slate-900 text-slate-400 border border-slate-800 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors hover:text-white" id="filter-btn-festivals">Festivals</button>
-                            <button onclick="filterGallery('visits')" class="gallery-filter-btn px-4 py-2 bg-slate-900 text-slate-400 border border-slate-800 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors hover:text-white" id="filter-btn-visits">Industrial Visits</button>
-                        </div>
-                    </div>
-
-                    <!-- Photo Grid -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6" id="galleryGrid">
-                        <!-- Photo 1 -->
-                        <div class="gallery-item group relative aspect-[4/3] rounded-xl overflow-hidden border border-slate-800" data-tag="workshops">
-                            <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&q=80&w=400" onerror="this.src='https://placehold.co/400x300/1e293b/00a896?text=Workshop'" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="Robotics development workshop">
-                            <div class="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                                <span class="bg-teal-500 text-slate-950 font-bold px-4 py-2 rounded-lg text-xs">View Fullscreen</span>
+                    <h3 class="text-xl font-bold text-white mb-6 border-l-4 border-teal-500 pl-3">Technical Team</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-stagger-group">
+                        <!-- Technical Card 1: Ujjwal Prajapati -->
+                        <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-2xl border border-slate-800 text-center relative overflow-hidden shadow-xl hover:border-teal-500/20 transition-all duration-300">
+                            <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-600 flex items-center justify-center mx-auto mb-4 border-2 border-slate-800 shadow-inner">
+                                <span class="text-white font-extrabold text-lg">UP</span>
+                            </div>
+                            <h4 class="text-base font-bold text-white">Ujjwal Prajapati</h4>
+                            <p class="text-xs text-teal-400 font-semibold uppercase tracking-wider mt-1">Technical Team</p>
+                            <div class="flex justify-center gap-3 mt-4 text-slate-400">
+                                <a href="https://linkedin.com" target="_blank" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-linkedin text-sm"></i></a>
+                                <a href="https://instagram.com" target="_blank" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-instagram text-sm"></i></a>
                             </div>
                         </div>
-                        <!-- Photo 2 -->
-                        <div class="gallery-item group relative aspect-[4/3] rounded-xl overflow-hidden border border-slate-800" data-tag="festivals">
-                            <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&q=80&w=400" onerror="this.src='https://placehold.co/400x300/1e293b/00a896?text=Fest'" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="Tech Fest">
-                            <div class="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                                <span class="bg-teal-500 text-slate-950 font-bold px-4 py-2 rounded-lg text-xs">View Fullscreen</span>
+                        <!-- Technical Card 2: Aryesh Deshmukh -->
+                        <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-2xl border border-slate-800 text-center relative overflow-hidden shadow-xl hover:border-teal-500/20 transition-all duration-300">
+                            <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-600 flex items-center justify-center mx-auto mb-4 border-2 border-slate-800 shadow-inner">
+                                <span class="text-white font-extrabold text-lg">AD</span>
+                            </div>
+                            <h4 class="text-base font-bold text-white">Aryesh Deshmukh</h4>
+                            <p class="text-xs text-teal-400 font-semibold uppercase tracking-wider mt-1">Technical Team</p>
+                            <div class="flex justify-center gap-3 mt-4 text-slate-400">
+                                <a href="https://linkedin.com" target="_blank" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-linkedin text-sm"></i></a>
+                                <a href="https://instagram.com" target="_blank" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-instagram text-sm"></i></a>
                             </div>
                         </div>
-                        <!-- Photo 3 -->
-                        <div class="gallery-item group relative aspect-[4/3] rounded-xl overflow-hidden border border-slate-800" data-tag="visits">
-                            <img src="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&q=80&w=400" onerror="this.src='https://placehold.co/400x300/1e293b/00a896?text=Industrial+Tour'" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="Chemical Processing Factory Tour">
-                            <div class="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                                <span class="bg-teal-500 text-slate-950 font-bold px-4 py-2 rounded-lg text-xs">View Fullscreen</span>
+                        <!-- Technical Card 3: Avanish Wankhede -->
+                        <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-2xl border border-slate-800 text-center relative overflow-hidden shadow-xl hover:border-teal-500/20 transition-all duration-300">
+                            <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-600 flex items-center justify-center mx-auto mb-4 border-2 border-slate-800 shadow-inner">
+                                <span class="text-white font-extrabold text-lg">AW</span>
+                            </div>
+                            <h4 class="text-base font-bold text-white">Avanish Wankhede</h4>
+                            <p class="text-xs text-teal-400 font-semibold uppercase tracking-wider mt-1">Technical Team</p>
+                            <div class="flex justify-center gap-3 mt-4 text-slate-400">
+                                <a href="https://linkedin.com" target="_blank" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-linkedin text-sm"></i></a>
+                                <a href="https://instagram.com" target="_blank" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-instagram text-sm"></i></a>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 5. Alumni Connect Portal (Element: Alumni Connect) -->
-                <div class="bg-slate-900 rounded-2xl border border-slate-800 p-8 flex flex-col md:flex-row justify-between items-center gap-8">
-                    <div class="max-w-2xl text-center md:text-left">
-                        <span class="text-teal-400 text-xs font-bold uppercase tracking-widest">ISA Heritage Network</span>
-                        <h3 class="text-2xl font-extrabold text-white mt-1">Alumni Connect Hub</h3>
-                        <p class="text-slate-400 text-sm mt-2 leading-relaxed">Our legacy thrives through our graduating professionals working at top tech firms. Are you an ISA alum? Register in our active network directory to mentor the next generation.</p>
+                <!-- DOMAIN B: EDITORIAL DOMAIN -->
+                <div class="mb-20">
+                    <h3 class="text-xl font-bold text-white mb-6 border-l-4 border-blue-500 pl-3">Editorial Domain</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 max-w-4xl animate-stagger-group">
+                        <!-- Editorial Card 1: Keyur Kulkarni -->
+                        <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-2xl border border-slate-800 text-center relative overflow-hidden shadow-xl hover:border-blue-500/20 transition-all duration-300">
+                            <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center mx-auto mb-4 border-2 border-slate-800 shadow-inner">
+                                <span class="text-white font-extrabold text-lg">KK</span>
+                            </div>
+                            <h4 class="text-base font-bold text-white">Keyur Kulkarni</h4>
+                            <p class="text-xs text-blue-400 font-semibold uppercase tracking-wider mt-1">Historian</p>
+                            <div class="flex justify-center gap-3 mt-4 text-slate-400">
+                                <a href="https://linkedin.com" target="_blank" class="hover:text-blue-400 transition-colors"><i class="fa-brands fa-linkedin text-sm"></i></a>
+                                <a href="https://instagram.com" target="_blank" class="hover:text-blue-400 transition-colors"><i class="fa-brands fa-instagram text-sm"></i></a>
+                            </div>
+                        </div>
+                        <!-- Editorial Card 2: Aadya Bharde -->
+                        <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-2xl border border-slate-800 text-center relative overflow-hidden shadow-xl hover:border-blue-500/20 transition-all duration-300">
+                            <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center mx-auto mb-4 border-2 border-slate-800 shadow-inner">
+                                <span class="text-white font-extrabold text-lg">AB</span>
+                            </div>
+                            <h4 class="text-base font-bold text-white">Aadya Bharde</h4>
+                            <p class="text-xs text-blue-400 font-semibold uppercase tracking-wider mt-1">Historian</p>
+                            <div class="flex justify-center gap-3 mt-4 text-slate-400">
+                                <a href="https://linkedin.com" target="_blank" class="hover:text-blue-400 transition-colors"><i class="fa-brands fa-linkedin text-sm"></i></a>
+                                <a href="https://instagram.com" target="_blank" class="hover:text-blue-400 transition-colors"><i class="fa-brands fa-instagram text-sm"></i></a>
+                            </div>
+                        </div>
                     </div>
-                    <button onclick="openAlumniForm()" class="px-6 py-3.5 bg-slate-950 hover:bg-slate-800 text-white border border-slate-800 rounded-xl font-semibold transition-all shadow-md text-sm shrink-0 w-full md:w-auto text-center">
-                        <i class="fa-solid fa-graduation-cap mr-2 text-teal-400"></i> Join Alumni Registry
-                    </button>
                 </div>
+
+                <!-- DOMAIN C: PUBLICITY DOMAIN -->
+                <div class="mb-20">
+                    <h3 class="text-xl font-bold text-white mb-6 border-l-4 border-purple-500 pl-3">Publicity Domain</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-stagger-group">
+                        <!-- Publicity Card 1: Eshan Aryaa -->
+                        <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-2xl border border-slate-800 text-center relative overflow-hidden shadow-xl hover:border-purple-500/20 transition-all duration-300">
+                            <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-purple-500 to-pink-600 flex items-center justify-center mx-auto mb-4 border-2 border-slate-800 shadow-inner">
+                                <span class="text-white font-extrabold text-lg">EA</span>
+                            </div>
+                            <h4 class="text-base font-bold text-white">Eshan Aryaa</h4>
+                            <p class="text-xs text-purple-400 font-semibold uppercase tracking-wider mt-1">Co-Head</p>
+                            <div class="flex justify-center gap-3 mt-4 text-slate-400">
+                                <a href="https://linkedin.com" target="_blank" class="hover:text-purple-400 transition-colors"><i class="fa-brands fa-linkedin text-sm"></i></a>
+                                <a href="https://instagram.com" target="_blank" class="hover:text-purple-400 transition-colors"><i class="fa-brands fa-instagram text-sm"></i></a>
+                            </div>
+                        </div>
+                        <!-- Publicity Card 2: Ansh Bhoir -->
+                        <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-2xl border border-slate-800 text-center relative overflow-hidden shadow-xl hover:border-purple-500/20 transition-all duration-300">
+                            <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-purple-500 to-pink-600 flex items-center justify-center mx-auto mb-4 border-2 border-slate-800 shadow-inner">
+                                <span class="text-white font-extrabold text-lg">AB</span>
+                            </div>
+                            <h4 class="text-base font-bold text-white">Ansh Bhoir</h4>
+                            <p class="text-xs text-purple-400 font-semibold uppercase tracking-wider mt-1">Co-Head</p>
+                            <div class="flex justify-center gap-3 mt-4 text-slate-400">
+                                <a href="https://linkedin.com" target="_blank" class="hover:text-purple-400 transition-colors"><i class="fa-brands fa-linkedin text-sm"></i></a>
+                                <a href="https://instagram.com" target="_blank" class="hover:text-purple-400 transition-colors"><i class="fa-brands fa-instagram text-sm"></i></a>
+                            </div>
+                        </div>
+                        <!-- Publicity Card 3: Anjali Karpe -->
+                        <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-2xl border border-slate-800 text-center relative overflow-hidden shadow-xl hover:border-purple-500/20 transition-all duration-300">
+                            <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-purple-500 to-pink-600 flex items-center justify-center mx-auto mb-4 border-2 border-slate-800 shadow-inner">
+                                <span class="text-white font-extrabold text-lg">AK</span>
+                            </div>
+                            <h4 class="text-base font-bold text-white">Anjali Karpe</h4>
+                            <p class="text-xs text-purple-400 font-semibold uppercase tracking-wider mt-1">Co-Head</p>
+                            <div class="flex justify-center gap-3 mt-4 text-slate-400">
+                                <a href="https://linkedin.com" target="_blank" class="hover:text-purple-400 transition-colors"><i class="fa-brands fa-linkedin text-sm"></i></a>
+                                <a href="https://instagram.com" target="_blank" class="hover:text-purple-400 transition-colors"><i class="fa-brands fa-instagram text-sm"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DOMAIN D: ADMINISTRATION DOMAIN -->
+                <div class="mb-20">
+                    <h3 class="text-xl font-bold text-white mb-6 border-l-4 border-amber-500 pl-3">Administration Domain</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-stagger-group">
+                        <!-- Admin Card 1: Ayan Varekar -->
+                        <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-2xl border border-slate-800 text-center relative overflow-hidden shadow-xl hover:border-amber-500/20 transition-all duration-300">
+                            <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-amber-500 to-yellow-600 flex items-center justify-center mx-auto mb-4 border-2 border-slate-800 shadow-inner">
+                                <span class="text-white font-extrabold text-lg">AV</span>
+                            </div>
+                            <h4 class="text-base font-bold text-white">Ayan Varekar</h4>
+                            <p class="text-xs text-amber-400 font-semibold uppercase tracking-wider mt-1">Head</p>
+                            <div class="flex justify-center gap-3 mt-4 text-slate-400">
+                                <a href="https://linkedin.com" target="_blank" class="hover:text-amber-400 transition-colors"><i class="fa-brands fa-linkedin text-sm"></i></a>
+                                <a href="https://instagram.com" target="_blank" class="hover:text-amber-400 transition-colors"><i class="fa-brands fa-instagram text-sm"></i></a>
+                            </div>
+                        </div>
+                        <!-- Admin Card 2: Atharv Gharat -->
+                        <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-2xl border border-slate-800 text-center relative overflow-hidden shadow-xl hover:border-amber-500/20 transition-all duration-300">
+                            <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-amber-500 to-yellow-600 flex items-center justify-center mx-auto mb-4 border-2 border-slate-800 shadow-inner">
+                                <span class="text-white font-extrabold text-lg">AG</span>
+                            </div>
+                            <h4 class="text-base font-bold text-white">Atharv Gharat</h4>
+                            <p class="text-xs text-amber-400 font-semibold uppercase tracking-wider mt-1">Co-Head</p>
+                            <div class="flex justify-center gap-3 mt-4 text-slate-400">
+                                <a href="https://linkedin.com" target="_blank" class="hover:text-amber-400 transition-colors"><i class="fa-brands fa-linkedin text-sm"></i></a>
+                                <a href="https://instagram.com" target="_blank" class="hover:text-amber-400 transition-colors"><i class="fa-brands fa-instagram text-sm"></i></a>
+                            </div>
+                        </div>
+                        <!-- Admin Card 3: Atharv Bhoir -->
+                        <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-2xl border border-slate-800 text-center relative overflow-hidden shadow-xl hover:border-amber-500/20 transition-all duration-300">
+                            <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-amber-500 to-yellow-600 flex items-center justify-center mx-auto mb-4 border-2 border-slate-800 shadow-inner">
+                                <span class="text-white font-extrabold text-lg">AB</span>
+                            </div>
+                            <h4 class="text-base font-bold text-white">Atharv Bhoir</h4>
+                            <p class="text-xs text-amber-400 font-semibold uppercase tracking-wider mt-1">Co-Head</p>
+                            <div class="flex justify-center gap-3 mt-4 text-slate-400">
+                                <a href="https://linkedin.com" target="_blank" class="hover:text-amber-400 transition-colors"><i class="fa-brands fa-linkedin text-sm"></i></a>
+                                <a href="https://instagram.com" target="_blank" class="hover:text-amber-400 transition-colors"><i class="fa-brands fa-instagram text-sm"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DOMAIN E: CREATIVITY DOMAIN -->
+                <div class="mb-20">
+                    <h3 class="text-xl font-bold text-white mb-6 border-l-4 border-teal-400 pl-3">Creativity Domain</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 animate-stagger-group">
+                        <!-- Creative Card 1: Yahya Dongarkar -->
+                        <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-2xl border border-slate-800 text-center relative overflow-hidden shadow-xl hover:border-teal-400/20 transition-all duration-300">
+                            <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-teal-400 to-emerald-500 flex items-center justify-center mx-auto mb-4 border-2 border-slate-800 shadow-inner">
+                                <span class="text-white font-extrabold text-lg">YD</span>
+                            </div>
+                            <h4 class="text-base font-bold text-white">Yahya Dongarkar</h4>
+                            <p class="text-xs text-teal-400 font-semibold uppercase tracking-wider mt-1">Head</p>
+                            <div class="flex justify-center gap-3 mt-4 text-slate-400">
+                                <a href="https://linkedin.com" target="_blank" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-linkedin text-sm"></i></a>
+                                <a href="https://instagram.com" target="_blank" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-instagram text-sm"></i></a>
+                            </div>
+                        </div>
+                        <!-- Creative Card 2: Vaibhavi Patil -->
+                        <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-2xl border border-slate-800 text-center relative overflow-hidden shadow-xl hover:border-teal-400/20 transition-all duration-300">
+                            <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-teal-400 to-emerald-500 flex items-center justify-center mx-auto mb-4 border-2 border-slate-800 shadow-inner">
+                                <span class="text-white font-extrabold text-lg">VP</span>
+                            </div>
+                            <h4 class="text-base font-bold text-white">Vaibhavi Patil</h4>
+                            <p class="text-xs text-teal-400 font-semibold uppercase tracking-wider mt-1">Co-Head</p>
+                            <div class="flex justify-center gap-3 mt-4 text-slate-400">
+                                <a href="https://linkedin.com" target="_blank" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-linkedin text-sm"></i></a>
+                                <a href="https://instagram.com" target="_blank" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-instagram text-sm"></i></a>
+                            </div>
+                        </div>
+                        <!-- Creative Card 3: Shriya Dalvi -->
+                        <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-2xl border border-slate-800 text-center relative overflow-hidden shadow-xl hover:border-teal-400/20 transition-all duration-300">
+                            <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-teal-400 to-emerald-500 flex items-center justify-center mx-auto mb-4 border-2 border-slate-800 shadow-inner">
+                                <span class="text-white font-extrabold text-lg">SD</span>
+                            </div>
+                            <h4 class="text-base font-bold text-white">Shriya Dalvi</h4>
+                            <p class="text-xs text-teal-400 font-semibold uppercase tracking-wider mt-1">Co-Head</p>
+                            <div class="flex justify-center gap-3 mt-4 text-slate-400">
+                                <a href="https://linkedin.com" target="_blank" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-linkedin text-sm"></i></a>
+                                <a href="https://instagram.com" target="_blank" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-instagram text-sm"></i></a>
+                            </div>
+                        </div>
+                        <!-- Creative Card 4: Angel Bari -->
+                        <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-2xl border border-slate-800 text-center relative overflow-hidden shadow-xl hover:border-teal-400/20 transition-all duration-300">
+                            <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-teal-400 to-emerald-500 flex items-center justify-center mx-auto mb-4 border-2 border-slate-800 shadow-inner">
+                                <span class="text-white font-extrabold text-lg">AB</span>
+                            </div>
+                            <h4 class="text-base font-bold text-white">Angel Bari</h4>
+                            <p class="text-xs text-teal-400 font-semibold uppercase tracking-wider mt-1">Co-Head</p>
+                            <div class="flex justify-center gap-3 mt-4 text-slate-400">
+                                <a href="https://linkedin.com" target="_blank" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-linkedin text-sm"></i></a>
+                                <a href="https://instagram.com" target="_blank" class="hover:text-teal-400 transition-colors"><i class="fa-brands fa-instagram text-sm"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DOMAIN F: MEDIA DOMAIN -->
+                <div class="mb-20">
+                    <h3 class="text-xl font-bold text-white mb-6 border-l-4 border-rose-500 pl-3">Media Domain</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 animate-stagger-group">
+                        <!-- Media Card 1: Mazen Zari -->
+                        <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-2xl border border-slate-800 text-center relative overflow-hidden shadow-xl hover:border-rose-500/20 transition-all duration-300">
+                            <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-rose-500 to-red-600 flex items-center justify-center mx-auto mb-4 border-2 border-slate-800 shadow-inner">
+                                <span class="text-white font-extrabold text-lg">MZ</span>
+                            </div>
+                            <h4 class="text-base font-bold text-white">Mazen Zari</h4>
+                            <p class="text-xs text-rose-400 font-semibold uppercase tracking-wider mt-1">Head</p>
+                            <div class="flex justify-center gap-3 mt-4 text-slate-400">
+                                <a href="https://linkedin.com" target="_blank" class="hover:text-rose-400 transition-colors"><i class="fa-brands fa-linkedin text-sm"></i></a>
+                                <a href="https://instagram.com" target="_blank" class="hover:text-rose-400 transition-colors"><i class="fa-brands fa-instagram text-sm"></i></a>
+                            </div>
+                        </div>
+                        <!-- Media Card 2: Sayan Dutta -->
+                        <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-2xl border border-slate-800 text-center relative overflow-hidden shadow-xl hover:border-rose-500/20 transition-all duration-300">
+                            <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-rose-500 to-red-600 flex items-center justify-center mx-auto mb-4 border-2 border-slate-800 shadow-inner">
+                                <span class="text-white font-extrabold text-lg">SD</span>
+                            </div>
+                            <h4 class="text-base font-bold text-white">Sayan Dutta</h4>
+                            <p class="text-xs text-rose-400 font-semibold uppercase tracking-wider mt-1">Co-Head</p>
+                            <div class="flex justify-center gap-3 mt-4 text-slate-400">
+                                <a href="https://linkedin.com" target="_blank" class="hover:text-rose-400 transition-colors"><i class="fa-brands fa-linkedin text-sm"></i></a>
+                                <a href="https://instagram.com" target="_blank" class="hover:text-rose-400 transition-colors"><i class="fa-brands fa-instagram text-sm"></i></a>
+                            </div>
+                        </div>
+                        <!-- Media Card 3: Vishesh Karot -->
+                        <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-2xl border border-slate-800 text-center relative overflow-hidden shadow-xl hover:border-rose-500/20 transition-all duration-300">
+                            <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-rose-500 to-red-600 flex items-center justify-center mx-auto mb-4 border-2 border-slate-800 shadow-inner">
+                                <span class="text-white font-extrabold text-lg">VK</span>
+                            </div>
+                            <h4 class="text-base font-bold text-white">Vishesh Karot</h4>
+                            <p class="text-xs text-rose-400 font-semibold uppercase tracking-wider mt-1">Co-Head</p>
+                            <div class="flex justify-center gap-3 mt-4 text-slate-400">
+                                <a href="https://linkedin.com" target="_blank" class="hover:text-rose-400 transition-colors"><i class="fa-brands fa-linkedin text-sm"></i></a>
+                                <a href="https://instagram.com" target="_blank" class="hover:text-rose-400 transition-colors"><i class="fa-brands fa-instagram text-sm"></i></a>
+                            </div>
+                        </div>
+                        <!-- Media Card 4: Mayuri Varti -->
+                        <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-2xl border border-slate-800 text-center relative overflow-hidden shadow-xl hover:border-rose-500/20 transition-all duration-300">
+                            <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-rose-500 to-red-600 flex items-center justify-center mx-auto mb-4 border-2 border-slate-800 shadow-inner">
+                                <span class="text-white font-extrabold text-lg">MV</span>
+                            </div>
+                            <h4 class="text-base font-bold text-white">Mayuri Varti</h4>
+                            <p class="text-xs text-rose-400 font-semibold uppercase tracking-wider mt-1">Co-Head</p>
+                            <div class="flex justify-center gap-3 mt-4 text-slate-400">
+                                <a href="https://linkedin.com" target="_blank" class="hover:text-rose-400 transition-colors"><i class="fa-brands fa-linkedin text-sm"></i></a>
+                                <a href="https://instagram.com" target="_blank" class="hover:text-rose-400 transition-colors"><i class="fa-brands fa-instagram text-sm"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-20">
+                    <div class="text-center max-w-3xl mx-auto mb-10">
+                        <span class="text-teal-400 text-xs font-extrabold uppercase tracking-widest">Visual Archive</span>
+                        <h2 class="text-3xl font-extrabold text-white mt-1">Full Photo Gallery</h2>
+                        <div class="w-16 h-1 bg-teal-500 mx-auto mt-4 rounded-full"></div>
+                        
+                        <!-- Filter Controls -->
+                        <div class="flex flex-wrap justify-center gap-2 mt-8 bg-slate-900 p-1.5 rounded-xl border border-slate-800 max-w-xl mx-auto">
+                            <button onclick="filterGallery('all')" class="gallery-filter-btn flex-1 py-2 px-3 rounded-lg text-xs font-semibold bg-teal-500 text-slate-950 transition-all">All</button>
+                            <button onclick="filterGallery('workshops')" class="gallery-filter-btn flex-1 py-2 px-3 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all">Workshops</button>
+                            <button onclick="filterGallery('festivals')" class="gallery-filter-btn flex-1 py-2 px-3 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all">Festivals</button>
+                            <button onclick="filterGallery('visits')" class="gallery-filter-btn flex-1 py-2 px-3 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all">Visits</button>
+                        </div>
+                    </div>
+
+                    <!-- Gallery Dynamic Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 animate-stagger-group" id="galleryGrid">
+                        <!-- Img 1 -->
+                        <div class="gallery-item group relative aspect-video rounded-2xl overflow-hidden border border-slate-800" data-tag="workshops">
+                            <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=400" onerror="this.src='https://placehold.co/400x300/1e293b/00a896?text=Robotics'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="Robotics Lab">
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+                                <span class="text-xs text-teal-400 font-bold uppercase">IoT & Robotics Lab Workshop</span>
+                            </div>
+                        </div>
+                        <!-- Img 2 -->
+                        <div class="gallery-item group relative aspect-video rounded-2xl overflow-hidden border border-slate-800" data-tag="festivals">
+                            <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=400" onerror="this.src='https://placehold.co/400x300/1e293b/00a896?text=Hackathon'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="Conclave">
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+                                <span class="text-xs text-teal-400 font-bold uppercase">ISA Regional Conclave Stage</span>
+                            </div>
+                        </div>
+                        <!-- Img 3 -->
+                        <div class="gallery-item group relative aspect-video rounded-2xl overflow-hidden border border-slate-800" data-tag="visits">
+                            <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=400" onerror="this.src='https://placehold.co/400x300/1e293b/00a896?text=Industry'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="Nuclear visit">
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+                                <span class="text-xs text-teal-400 font-bold uppercase">Industrial Automation Visit</span>
+                            </div>
+                        </div>
+                        <!-- Img 4 -->
+                        <div class="gallery-item group relative aspect-video rounded-2xl overflow-hidden border border-slate-800" data-tag="workshops">
+                            <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=400" onerror="this.src='https://placehold.co/400x300/1e293b/00a896?text=Coding'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="PLC Training">
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+                                <span class="text-xs text-teal-400 font-bold uppercase">PLC & HMI Programming Bootcamp</span>
+                            </div>
+                        </div>
+                        <!-- Img 5 -->
+                        <div class="gallery-item group relative aspect-video rounded-2xl overflow-hidden border border-slate-800" data-tag="festivals">
+                            <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&q=80&w=400" onerror="this.src='https://placehold.co/400x300/1e293b/00a896?text=Awards'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="Awards">
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+                                <span class="text-xs text-teal-400 font-bold uppercase">ISA Student Awards Banquet</span>
+                            </div>
+                        </div>
+                        <!-- Img 6 -->
+                        <div class="gallery-item group relative aspect-video rounded-2xl overflow-hidden border border-slate-800" data-tag="visits">
+                            <img src="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&q=80&w=400" onerror="this.src='https://placehold.co/400x300/1e293b/00a896?text=Grid'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="Substation tour">
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+                                <span class="text-xs text-teal-400 font-bold uppercase">Smart Grid Substation Tour</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alumni Connect Registry Portal -->
+                <div class="bg-gradient-to-r from-teal-955/40 to-slate-900 border border-teal-500/15 p-8 rounded-2xl relative overflow-hidden">
+                    <div class="absolute -right-12 -bottom-12 w-32 h-32 bg-teal-400/5 rounded-full blur-2xl"></div>
+                    <div class="max-w-3xl relative z-10">
+                        <span class="inline-block bg-teal-400/10 text-teal-400 border border-teal-500/20 text-[10px] font-bold px-2.5 py-1 rounded-full tracking-widest uppercase mb-4">
+                            ISA NETWORK
+                        </span>
+                        <h3 class="text-2xl font-extrabold text-white mb-2">Alumni Registry Network</h3>
+                        <p class="text-sm text-slate-400 mb-6">Are you an ISA alumni? Join our centralized direct database pipeline to offer career mentorship, judge technical conclaves, or propose core industrial internships.</p>
+                        
+                        <form id="alumniForm" onsubmit="handleAlumniSubmit(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <input type="text" id="alumniName" required placeholder="Full Name" class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-teal-500">
+                            <input type="email" id="alumniEmail" required placeholder="Personal Email" class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-teal-500">
+                            <button type="submit" class="bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl text-sm py-3 transition-colors">
+                                Join Database <i class="fa-solid fa-database ml-1"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
             </div>
         </section>
 
@@ -711,218 +1119,258 @@
         <!-- ================= PAGE 4: JOIN US ================= -->
         <section id="join-view" class="tab-view hidden py-12">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                
-                <!-- ISA Membership section (Element: ISA Membership) -->
                 <div class="text-center max-w-3xl mx-auto mb-16">
-                    <span class="text-teal-400 text-xs font-extrabold uppercase tracking-widest">Join the Chapter</span>
-                    <h1 class="text-4xl font-extrabold text-white mt-1">ISA Professional Membership</h1>
-                    <p class="text-slate-400 text-sm mt-3">Expand your engineering horizons, unlock official certifications, access laboratory kits, and secure high-value placements.</p>
+                    <h1 class="text-4xl font-extrabold text-white">Unlock Your Global Automation Career</h1>
+                    <p class="text-slate-400 mt-2">Become an official student member of the International Society of Automation.</p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-20">
-                    <!-- Basic Membership Tier -->
-                    <div class="bg-slate-900 rounded-2xl border border-slate-800 p-8 flex flex-col justify-between hover:border-slate-700 transition-all">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mb-20">
+                    <div class="lg:col-span-7 space-y-6">
+                        <h3 class="text-2xl font-bold text-white">Why Join ISA Student Chapter?</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">As a global society member, you obtain direct credentials, active local laboratory access, peer project teams, and structural guidance that extends beyond campus gates.</p>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4">
+                            <!-- Benefit 1 -->
+                            <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl">
+                                <div class="w-10 h-10 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-400 mb-4"><i class="fa-solid fa-medal"></i></div>
+                                <h4 class="font-bold text-white text-base">Global Credentials</h4>
+                                <p class="text-xs text-slate-400 mt-2">Acquire international membership certificates acknowledged directly by top instrumentation employers.</p>
+                            </div>
+                            <!-- Benefit 2 -->
+                            <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl">
+                                <div class="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400 mb-4"><i class="fa-solid fa-flask"></i></div>
+                                <h4 class="font-bold text-white text-base">Lab & Equipment</h4>
+                                <p class="text-xs text-slate-400 mt-2">Priority access to microcontroller kits, PLCs, calibration rigs, and local physical testing labs.</p>
+                            </div>
+                            <!-- Benefit 3 -->
+                            <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl">
+                                <div class="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-400 mb-4"><i class="fa-solid fa-newspaper"></i></div>
+                                <h4 class="font-bold text-white text-base">Isaac 2026 Print Edition</h4>
+                                <p class="text-xs text-slate-400 mt-2">Receive an exclusive physical copy of our annual tech-art portfolio journal directly upon launch.</p>
+                            </div>
+                            <!-- Benefit 4 -->
+                            <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl">
+                                <div class="w-10 h-10 rounded-lg bg-yellow-500/10 flex items-center justify-center text-yellow-400 mb-4"><i class="fa-solid fa-briefcase"></i></div>
+                                <h4 class="font-bold text-white text-base">Corporate Pipeline</h4>
+                                <p class="text-xs text-slate-400 mt-2">Immediate visibility of our corporate collabs pipeline, industrial visits, and expert masterclasses.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Membership Active Application Form -->
+                    <div class="lg:col-span-5">
+                        <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl shadow-xl relative">
+                            <div class="absolute top-0 right-0 bg-teal-500 text-slate-950 font-bold text-[9px] px-3 py-1 rounded-bl-xl rounded-tr-xl tracking-widest uppercase">
+                                APPLICATION WINDOW OPEN
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-6">Student Enrollment Portal</h3>
+                            
+                            <form id="membershipForm" onsubmit="handleMembershipSubmit(event)" class="space-y-4">
+                                <div>
+                                    <label class="block text-xs text-slate-400 uppercase font-semibold mb-1.5">Full Name</label>
+                                    <input type="text" id="memName" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-teal-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-400 uppercase font-semibold mb-1.5">University Email</label>
+                                    <input type="email" id="memEmail" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-teal-500">
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs text-slate-400 uppercase font-semibold mb-1.5">Academic Year</label>
+                                        <select id="memYear" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-teal-500">
+                                            <option>First Year</option>
+                                            <option>Second Year</option>
+                                            <option selected>Third Year</option>
+                                            <option>Fourth Year</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs text-slate-400 uppercase font-semibold mb-1.5">Engineering Branch</label>
+                                        <input type="text" id="memBranch" required placeholder="e.g., EXTC, IT" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-teal-500">
+                                    </div>
+                                </div>
+                                <button type="submit" class="w-full bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-teal-500/10 mt-2 text-sm">
+                                    Submit Application & Join
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Corporate Partnership and Sponsors Outreach (Element: Sponcer Pitch & Collabs) -->
+                <div class="border-t border-slate-900 pt-20">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                         <div>
-                            <span class="text-slate-400 text-xs uppercase font-extrabold tracking-widest">Student Tier</span>
-                            <h3 class="text-2xl font-bold text-white mt-1">Standard Chapter Pass</h3>
-                            <div class="my-6">
-                                <span class="text-3xl font-black text-white">$15</span>
-                                <span class="text-slate-400 text-xs">/ academic year</span>
+                            <span class="text-teal-400 text-xs font-extrabold uppercase tracking-widest">For Corporate Entities</span>
+                            <h3 class="text-2xl font-extrabold text-white mt-1">Corporate Integrations & Sponsor Tiers</h3>
+                            <p class="text-sm text-slate-400 mt-4 leading-relaxed">Our section serves as a massive direct interface for Industry 4.0 recruitment. By sponsoring our labs or annual magazine, you gain visibility among our top engineering students and physical space branding rights during our conclaves.</p>
+                            
+                            <div class="flex gap-4 mt-8">
+                                <button onclick="triggerFileDownload('Corporate_Partnership_Guide.pdf')" class="px-5 py-3 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl text-xs border border-slate-800 flex items-center gap-2">
+                                    <i class="fa-solid fa-download text-teal-400"></i> Download Corporate Guide
+                                </button>
+                                <button onclick="switchTab('help')" class="px-5 py-3 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl text-xs">
+                                    Pitch Collaboration
+                                </button>
                             </div>
-                            <ul class="space-y-3.5 text-slate-400 text-sm">
-                                <li><i class="fa-solid fa-check text-teal-400 mr-2"></i> Standard entry to all core campus workshops</li>
-                                <li><i class="fa-solid fa-check text-teal-400 mr-2"></i> Direct access to local Hardware Labs and Testing Kits</li>
-                                <li><i class="fa-solid fa-check text-teal-400 mr-2"></i> Free Digital issues of the annual ISAAC Magazine</li>
-                                <li><i class="fa-solid fa-check text-teal-400 mr-2"></i> Networking rights inside the ISA Community Portal</li>
-                            </ul>
                         </div>
-                        <button onclick="openMembershipForm('Standard Chapter Pass')" class="w-full mt-8 py-3 bg-slate-950 hover:bg-slate-800 text-white border border-slate-800 font-semibold rounded-xl text-sm transition-colors">
-                            Apply Standard Pass
-                        </button>
-                    </div>
 
-                    <!-- Premium Membership Tier -->
-                    <div class="bg-gradient-to-b from-slate-900 to-slate-950 rounded-2xl border-2 border-teal-500 p-8 flex flex-col justify-between shadow-xl relative">
-                        <div class="absolute -top-3.5 right-6 bg-teal-500 text-slate-950 font-black text-[9px] px-3.5 py-1 rounded-full uppercase tracking-widest">
-                            HIGHLY RECOMMENDED
-                        </div>
-                        <div>
-                            <span class="text-teal-400 text-xs uppercase font-extrabold tracking-widest">Elite Tier</span>
-                            <h3 class="text-2xl font-bold text-white mt-1">International Global Pass</h3>
-                            <div class="my-6">
-                                <span class="text-3xl font-black text-white">$35</span>
-                                <span class="text-slate-400 text-xs">/ academic year</span>
-                            </div>
-                            <ul class="space-y-3.5 text-slate-300 text-sm">
-                                <li><i class="fa-solid fa-check text-teal-400 mr-2"></i> <span class="font-semibold text-white">Official ISA Global Certification ID</span></li>
-                                <li><i class="fa-solid fa-check text-teal-400 mr-2"></i> 50% discount on global automation exams</li>
-                                <li><i class="fa-solid fa-check text-teal-400 mr-2"></i> Free print-copy issues of ISAAC 2026 Magazine</li>
-                                <li><i class="fa-solid fa-check text-teal-400 mr-2"></i> Direct mentor matching with alumni in USA/Europe</li>
-                                <li><i class="fa-solid fa-check text-teal-400 mr-2"></i> Priority entry for high-stakes industrial site tours</li>
-                            </ul>
-                        </div>
-                        <button onclick="openMembershipForm('International Global Pass')" class="w-full mt-8 py-3 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl text-sm transition-all shadow-lg shadow-teal-500/20">
-                            Apply Global Elite Pass
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Company Collabs Portfolio (Element: Collabs with Company) -->
-                <div class="mb-20">
-                    <div class="text-center max-w-3xl mx-auto mb-12">
-                        <span class="text-teal-400 text-xs font-extrabold uppercase tracking-widest">Industry Integration</span>
-                        <h2 class="text-3xl font-extrabold text-white mt-1">Strategic Company Collaborations</h2>
-                        <p class="text-slate-400 text-sm mt-2">Connecting academic engineering output with immediate commercial workflows.</p>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        <!-- Collab 1 -->
-                        <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800">
-                            <div class="flex items-center gap-4 mb-4">
-                                <div class="w-12 h-12 rounded-xl bg-teal-500/10 flex items-center justify-center text-teal-400 text-xl font-bold">
-                                    <i class="fa-solid fa-industry"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-white">Siemens Automation Lab</h4>
-                                    <p class="text-xs text-slate-500">Joint Research Unit</p>
+                        <!-- Sponsor Tiers Matrix -->
+                        <div class="space-y-4">
+                            <!-- Tier 1 -->
+                            <div class="bg-gradient-to-r from-yellow-500/10 to-transparent border border-yellow-500/20 p-5 rounded-xl flex items-center justify-between">
+                                <div class="flex items-center gap-4">
+                                    <div class="text-2xl text-yellow-500"><i class="fa-solid fa-award"></i></div>
+                                    <div>
+                                        <h4 class="font-bold text-white text-sm">Platinum Sponsor Tier</h4>
+                                        <p class="text-xs text-slate-400 mt-1">Prime Conclave Main Stage Logo, full-page back cover advertisement in ISAAC 2026, and priority direct campus interviews.</p>
+                                    </div>
                                 </div>
                             </div>
-                            <p class="text-xs text-slate-400 leading-relaxed">
-                                Curating professional hardware benches utilizing programmable logic controllers (PLCs) with direct licensing of their engineering platform to student members.
-                            </p>
-                        </div>
-                        <!-- Collab 2 -->
-                        <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800">
-                            <div class="flex items-center gap-4 mb-4">
-                                <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 text-xl font-bold">
-                                    <i class="fa-solid fa-microchip"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-white">Intel Edge Development</h4>
-                                    <p class="text-xs text-slate-500">Hardware Integration Program</p>
+                            <!-- Tier 2 -->
+                            <div class="bg-gradient-to-r from-slate-400/10 to-transparent border border-slate-500/20 p-5 rounded-xl flex items-center justify-between">
+                                <div class="flex items-center gap-4">
+                                    <div class="text-2xl text-slate-300"><i class="fa-solid fa-medal"></i></div>
+                                    <div>
+                                        <h4 class="font-bold text-white text-sm">Gold Sponsor Tier</h4>
+                                        <p class="text-xs text-slate-400 mt-1">Conclave Booth Space, half-page portfolio slot inside ISAAC 2026, and prominent web logo exposure.</p>
+                                    </div>
                                 </div>
                             </div>
-                            <p class="text-xs text-slate-400 leading-relaxed">
-                                Supplying high-performance micro-controllers and neural hardware stick systems to accelerate smart computer-vision running projects on assembly conveyors.
-                            </p>
-                        </div>
-                        <!-- Collab 3 -->
-                        <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800">
-                            <div class="flex items-center gap-4 mb-4">
-                                <div class="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400 text-xl font-bold">
-                                    <i class="fa-solid fa-graduation-cap"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-white">Rockwell Intern Pipelines</h4>
-                                    <p class="text-xs text-slate-500">Corporate Placements</p>
-                                </div>
-                            </div>
-                            <p class="text-xs text-slate-400 leading-relaxed">
-                                Fast-tracking outstanding final-year ISA community members straight into structured pre-placement corporate evaluations and engineering training.
-                            </p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Strategic Sponsorship Tiers (Element: PRO & Sponsors) -->
-                <div class="bg-gradient-to-r from-teal-900/20 to-blue-900/20 rounded-2xl border border-teal-500/30 p-8 text-center max-w-4xl mx-auto">
-                    <h3 class="text-2xl font-extrabold text-white">Want to Sponsor our Initiatives?</h3>
-                    <p class="text-sm text-slate-300 mt-2 max-w-2xl mx-auto">Elevate your brand presence across 2,000+ technical student interactions, print/digital features in ISAAC 2026, and flagship hackathons.</p>
-                    
-                    <div class="flex flex-col sm:flex-row justify-center gap-4 mt-8">
-                        <a href="javascript:void(0)" onclick="showToast('Sponsorship brochure downloaded successfully as PDF!', 'success')" class="px-6 py-3.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl text-sm transition-all shadow-md">
-                            Download Sponsorship PDF <i class="fa-solid fa-download ml-1.5"></i>
-                        </a>
-                        <button onclick="switchTab('help')" class="px-6 py-3.5 bg-slate-900 border border-slate-800 hover:bg-slate-800 text-white font-semibold rounded-xl text-sm transition-colors">
-                            Contact PRO Team
-                        </button>
-                    </div>
-                </div>
             </div>
         </section>
 
 
-        <!-- ================= PAGE 5: HELP DESK ================= -->
+        <!-- ================= PAGE 5: HELP DESK & DATABASE PORTAL ================= -->
         <section id="help-view" class="tab-view hidden py-12">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                
-                <!-- Help Desk header (Element: Help Desk) -->
                 <div class="text-center max-w-3xl mx-auto mb-16">
-                    <span class="text-teal-400 text-xs font-extrabold uppercase tracking-widest">Support Portal</span>
-                    <h1 class="text-4xl font-extrabold text-white mt-1">ISA Support Help Desk</h1>
-                    <p class="text-slate-400 text-sm mt-3">Quick answers, project query submissions, and technical feedback channels.</p>
+                    <h1 class="text-4xl font-extrabold text-white">ISA Support & Help Desk</h1>
+                    <p class="text-slate-400 mt-2">Have questions about membership, project funds, or pitching articles for the magazine?</p>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 max-w-5xl mx-auto">
-                    <!-- FAQ Accordions (Left Column) -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-20">
+                    <!-- General FAQs -->
                     <div class="lg:col-span-7 space-y-4">
-                        <h3 class="text-xl font-bold text-white mb-6">Frequently Asked Questions</h3>
+                        <h3 class="text-xl font-bold text-white mb-6">Frequently Answered Queries</h3>
                         
                         <!-- FAQ 1 -->
-                        <div class="bg-slate-900 rounded-xl border border-slate-800 overflow-hidden transition-colors">
-                            <button onclick="toggleFAQ(1)" class="w-full p-5 text-left flex justify-between items-center text-slate-200 hover:text-white focus:outline-none">
-                                <span class="font-semibold text-sm">Who can apply for ISA student membership?</span>
-                                <i class="fa-solid fa-chevron-down text-xs text-slate-400 transition-transform duration-200" id="faq-icon-1"></i>
+                        <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+                            <button onclick="toggleFaq('faq-1')" class="w-full text-left px-6 py-4 font-bold text-sm text-white flex items-center justify-between focus:outline-none">
+                                <span>How do I submit articles for the next annual issue?</span>
+                                <i class="fa-solid fa-chevron-down text-xs text-teal-400" id="faq-1-icon"></i>
                             </button>
-                            <div class="hidden px-5 pb-5 text-xs text-slate-400 leading-relaxed border-t border-slate-800/50 pt-3" id="faq-ans-1">
-                                Membership is open to all university students enrolled in engineering, science, or design branches. Technical background in instrumentation is not strictly mandatory—we support learning from scratch.
+                            <div id="faq-1-content" class="hidden px-6 pb-5 text-xs text-slate-400 leading-relaxed border-t border-slate-800/50 pt-3">
+                                You can write technical blog posts, instrumentation reviews, or detailed student portfolio write-ups. Simply fill out the query ticket on the right side of this page and set the Category to "Article Pitch".
                             </div>
                         </div>
 
                         <!-- FAQ 2 -->
-                        <div class="bg-slate-900 rounded-xl border border-slate-800 overflow-hidden transition-colors">
-                            <button onclick="toggleFAQ(2)" class="w-full p-5 text-left flex justify-between items-center text-slate-200 hover:text-white focus:outline-none">
-                                <span class="font-semibold text-sm">How do I submit articles or builds for ISAAC 2026?</span>
-                                <i class="fa-solid fa-chevron-down text-xs text-slate-400 transition-transform duration-200" id="faq-icon-2"></i>
+                        <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+                            <button onclick="toggleFaq('faq-2')" class="w-full text-left px-6 py-4 font-bold text-sm text-white flex items-center justify-between focus:outline-none">
+                                <span>Can I join the active projects if I have zero prior experience?</span>
+                                <i class="fa-solid fa-chevron-down text-xs text-teal-400" id="faq-2-icon"></i>
                             </button>
-                            <div class="hidden px-5 pb-5 text-xs text-slate-400 leading-relaxed border-t border-slate-800/50 pt-3" id="faq-ans-2">
-                                You can submit article drafts and hardware project summaries directly using our Query Submission Form. The Editorial Review Team will audit the layout and publish selected works in the upcoming digital issues.
+                            <div id="faq-2-content" class="hidden px-6 pb-5 text-xs text-slate-400 leading-relaxed border-t border-slate-800/50 pt-3">
+                                Absolutely! Our joint technical core organizes hardware bootcamps specifically designed to train student members from the ground up before placing them inside active labs.
                             </div>
                         </div>
 
                         <!-- FAQ 3 -->
-                        <div class="bg-slate-900 rounded-xl border border-slate-800 overflow-hidden transition-colors">
-                            <button onclick="toggleFAQ(3)" class="w-full p-5 text-left flex justify-between items-center text-slate-200 hover:text-white focus:outline-none">
-                                <span class="font-semibold text-sm">Can I join multiple student running projects?</span>
-                                <i class="fa-solid fa-chevron-down text-xs text-slate-400 transition-transform duration-200" id="faq-icon-3"></i>
+                        <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+                            <button onclick="toggleFaq('faq-3')" class="w-full text-left px-6 py-4 font-bold text-sm text-white flex items-center justify-between focus:outline-none">
+                                <span>Is there physical registration required for membership?</span>
+                                <i class="fa-solid fa-chevron-down text-xs text-teal-400" id="faq-3-icon"></i>
                             </button>
-                            <div class="hidden px-5 pb-5 text-xs text-slate-400 leading-relaxed border-t border-slate-800/50 pt-3" id="faq-ans-3">
-                                Yes. Members can participate in multiple testing stages based on their work bandwidth, but to maintain extreme project focus, we encourage primary dedication to one active core project lab at a time.
+                            <div id="faq-3-content" class="hidden px-6 pb-5 text-xs text-slate-400 leading-relaxed border-t border-slate-800/50 pt-3">
+                                No. Initial processing is completed fully online. Once your online submission is reviewed, our Administration Domain will invite you to the local campus lab to finalize registration.
                             </div>
                         </div>
                     </div>
 
-                    <!-- Query Submit Form (Right Column) -->
-                    <div class="lg:col-span-5 bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl">
-                        <h4 class="font-bold text-white text-base mb-2">Submit a Query / Article Pitch</h4>
-                        <p class="text-xs text-slate-400 mb-6">Our core team usually reviews and responds back within 24 working hours.</p>
-                        
-                        <form id="helpForm" onsubmit="handleQuerySubmit(event)" class="space-y-4">
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Full Name</label>
-                                <input type="text" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500 text-xs">
+                    <!-- Direct Help Desk Input Query Ticket -->
+                    <div class="lg:col-span-5">
+                        <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl shadow-xl">
+                            <h3 class="text-xl font-bold text-white mb-2">Submit Query & Article Pitch</h3>
+                            <p class="text-xs text-slate-400 mb-6">Need quick answers or pitching some text? Submit a support ticket directly to our branch coordinators.</p>
+                            
+                            <form id="helpForm" onsubmit="handleQuerySubmit(event)" class="space-y-4">
+                                <div>
+                                    <label class="block text-xs text-slate-400 uppercase font-semibold mb-1.5">Email Handle</label>
+                                    <input type="email" id="queryEmail" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-teal-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-400 uppercase font-semibold mb-1.5">Support Category</label>
+                                    <select id="queryCat" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-teal-500">
+                                        <option>Membership Issues</option>
+                                        <option>Project Funding</option>
+                                        <option>Article Pitch for ISAAC</option>
+                                        <option>Corporate Sponsorship</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-400 uppercase font-semibold mb-1.5">Describe your query / pitch</label>
+                                    <textarea id="queryMsg" rows="4" required placeholder="Provide links, draft highlights, or specific questions here..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-teal-500"></textarea>
+                                </div>
+                                <button type="submit" class="w-full bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold py-3 rounded-xl text-sm transition-colors">
+                                    File Ticket <i class="fa-solid fa-paper-plane ml-1"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-900 pt-16">
+                    <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl shadow-2xl relative overflow-hidden">
+                        <div class="absolute top-0 right-0 bg-teal-500 text-slate-950 font-bold text-[10px] px-4 py-1 rounded-bl-xl tracking-wider uppercase flex items-center gap-1.5">
+                            <span class="w-2 h-2 bg-slate-950 rounded-full animate-ping"></span> Live Database Console
+                        </div>
+                        <div class="mb-6">
+                            <h3 class="text-2xl font-extrabold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-terminal text-teal-400"></i> ISA Branch Admin Panel
+                            </h3>
+                            <p class="text-xs text-slate-400 mt-1">This console captures real-time submissions made anywhere across your website forms (Memberships, Alumni, Event Tickets, Support queries).</p>
+                        </div>
+
+                        <!-- Data Table Filter Toggles -->
+                        <div class="flex flex-wrap gap-2 mb-6 border-b border-slate-800 pb-4">
+                            <button onclick="filterDatabase('memberships')" id="db-btn-memberships" class="px-4 py-2 bg-teal-500/10 text-teal-400 border border-teal-500/20 rounded-lg text-xs font-semibold hover:bg-teal-500/20">Memberships</button>
+                            <button onclick="filterDatabase('alumni')" id="db-btn-alumni" class="px-4 py-2 bg-slate-950 text-slate-400 border border-slate-800 rounded-lg text-xs font-semibold hover:bg-slate-800">Alumni Registry</button>
+                            <button onclick="filterDatabase('queries')" id="db-btn-queries" class="px-4 py-2 bg-slate-950 text-slate-400 border border-slate-800 rounded-lg text-xs font-semibold hover:bg-slate-800">Queries & Pitches</button>
+                            <button onclick="filterDatabase('events')" id="db-btn-events" class="px-4 py-2 bg-slate-950 text-slate-400 border border-slate-800 rounded-lg text-xs font-semibold hover:bg-slate-800">Event RSVP Tickets</button>
+                        </div>
+
+                        <!-- Data Display List Container -->
+                        <div class="bg-slate-950 border border-slate-800 rounded-xl overflow-x-auto min-h-[160px] p-4 text-slate-300">
+                            <div class="no-scrollbar overflow-y-auto max-h-[300px]">
+                                <table class="w-full text-left text-xs border-collapse">
+                                    <thead>
+                                        <tr class="border-b border-slate-800 text-slate-400 font-bold">
+                                            <th class="p-3">Timestamp / Ref</th>
+                                            <th class="p-3">Primary Info</th>
+                                            <th class="p-3">Secondary Info</th>
+                                            <th class="p-3">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="databaseTableBody">
+                                        <!-- Javascript dynamically populates items here -->
+                                    </tbody>
+                                </table>
                             </div>
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Institutional Email</label>
-                                <input type="email" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500 text-xs">
-                            </div>
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Category</label>
-                                <select class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500 text-xs">
-                                    <option>General Support Question</option>
-                                    <option>ISAAC 2026 Article Proposal</option>
-                                    <option>Running Project Labs Support</option>
-                                    <option>Corporate Partnership Pitch</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Your Message</label>
-                                <textarea rows="4" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500 text-xs"></textarea>
-                            </div>
-                            <button type="submit" class="w-full py-3.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl text-xs transition-all shadow-lg shadow-teal-500/10">
-                                Send Message <i class="fa-solid fa-paper-plane ml-1 text-[10px]"></i>
+                        </div>
+
+                        <div class="flex justify-end gap-3 mt-4 text-xs">
+                            <button onclick="clearCurrentCategory()" class="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 rounded-lg font-semibold transition-all">
+                                <i class="fa-solid fa-trash mr-1"></i> Clear Selection
                             </button>
-                        </form>
+                            <button onclick="loadMockData()" class="px-4 py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 rounded-lg font-semibold transition-all">
+                                <i class="fa-solid fa-database mr-1"></i> Load Demo Datasets
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -931,344 +1379,394 @@
     </main>
 
 
-    <!-- ================= MODALS & POPUPS ================= -->
-    
-    <!-- Modal 1: Isaac 2026 Magazine Reader Modal (Simulated digital flipbook page reader) -->
-    <div id="magazineModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <!-- Background overlay -->
-        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div onclick="closeMagazineModal()" class="fixed inset-0 bg-slate-950/90 transition-opacity" aria-hidden="true"></div>
-            <!-- Element trick to center the modal contents -->
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            
-            <div class="inline-block align-bottom bg-slate-900 border border-slate-800 rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
-                <!-- Modal Head -->
-                <div class="bg-slate-950 px-6 py-4 border-b border-slate-800 flex justify-between items-center">
-                    <div>
-                        <h3 class="text-base font-bold text-white">ISAAC 2026 Magazine Digital Reader</h3>
-                        <p class="text-[10px] text-teal-400">Page 1 of 2 - Cover Reveal</p>
-                    </div>
-                    <button onclick="closeMagazineModal()" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800">
-                        <i class="fa-solid fa-xmark text-lg"></i>
-                    </button>
+    <!-- ================= MODALS & GLOBAL UTILITIES ================= -->
+    <!-- ISAAC 2026 DIGITAL MAGAZINE MODAL -->
+    <div id="magazineModal" class="fixed inset-0 z-50 hidden bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="relative bg-slate-900 border border-slate-800 w-full max-w-4xl rounded-2xl overflow-hidden flex flex-col max-h-[90vh] shadow-2xl">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between px-6 py-4 border-b border-slate-800">
+                <div>
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-book-open text-teal-400"></i> ISAAC 2026 Digital Edition
+                    </h3>
+                    <p class="text-[10px] text-slate-400">Preview Reader Mode - Double tap or swipe pages to inspect.</p>
                 </div>
-                
-                <!-- Digital Reader Layout -->
-                <div class="p-6 bg-slate-950">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-slate-900 p-6 rounded-xl border border-slate-800">
-                        <!-- Simulated Cover Left Page -->
-                        <div class="relative aspect-[3/4] rounded-lg overflow-hidden border border-slate-800 shadow-md">
-                            <img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=400" class="w-full h-full object-cover" alt="Magazine Cover">
-                            <div class="absolute inset-0 bg-slate-900/10"></div>
-                        </div>
-                        <!-- Article Content Right Page -->
-                        <div class="text-slate-300 space-y-4">
-                            <span class="text-xs text-teal-400 font-bold uppercase tracking-widest">EDITORS INTRO</span>
-                            <h4 class="text-2xl font-extrabold text-white leading-tight">Welcome to the automation renaissance.</h4>
-                            <p class="text-xs leading-relaxed text-slate-400">
-                                This annual edition captures how students from different engineering lines come together to build edge IoT grids, visual conveyor controllers, and digital kinetic sculptures. Inside, we interview faculty mentors and trace current software builds running in campus labs.
-                            </p>
-                            <p class="text-xs leading-relaxed text-slate-400">
-                                Grab your virtual soldering irons, code repositories, and structural layouts. We are charting a course through real-world Industry 4.0 applications.
-                            </p>
-                            <div class="pt-4 flex items-center gap-4">
-                                <a href="javascript:void(0)" onclick="showToast('Annual ISAAC magazine download started as PDF!', 'success')" class="px-4 py-2 bg-teal-500 hover:bg-teal-400 text-slate-950 rounded-lg text-xs font-bold transition-all flex items-center gap-1">
-                                    <i class="fa-solid fa-download"></i> Download Full PDF Edition
-                                </a>
-                                <button onclick="showToast('Flipbook page transitions simulation triggered.')" class="text-slate-400 hover:text-white text-xs font-semibold">
-                                    Next Page <i class="fa-solid fa-arrow-right ml-1"></i>
-                                </button>
-                            </div>
-                        </div>
+                <button onclick="closeMagazineModal()" class="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-800 transition-colors">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Custom Built Digital Reader Area -->
+            <div class="flex-grow overflow-y-auto p-6 md:p-8 flex flex-col md:flex-row gap-8 items-center justify-center bg-slate-950/40">
+                <!-- Magazine Page Frame Simulator -->
+                <div class="relative w-full max-w-[340px] aspect-[3/4] bg-slate-900 border border-slate-800 rounded-lg overflow-hidden shadow-2xl shrink-0">
+                    <div class="absolute inset-0 bg-gradient-to-r from-slate-950/20 via-transparent to-slate-950/20 z-10 pointer-events-none"></div>
+                    <img id="magazinePageImg" src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=400" onerror="this.src='https://placehold.co/400x600/0f172a/14b8a6?text=Magazine+Mock'" class="w-full h-full object-cover transition-all duration-300" alt="Current Page">
+                    
+                    <div class="absolute bottom-4 left-4 right-4 z-20 text-white text-xs bg-slate-950/80 px-3 py-2 rounded-lg backdrop-blur">
+                        <span id="pageBadge" class="text-teal-400 font-extrabold uppercase text-[9px] block mb-0.5">COVER PAGE</span>
+                        <span id="pageTitle">Horizon Automations</span>
+                    </div>
+                </div>
+
+                <!-- Page Index Directory Controls -->
+                <div class="flex-grow space-y-4 w-full">
+                    <h4 class="font-extrabold text-white text-base">ISAAC 2026 Table of Contents</h4>
+                    <p class="text-xs text-slate-400 leading-normal">Our latest release unifies student portfolios with contributions by Honeywell and Siemens engineers.</p>
+                    
+                    <div class="space-y-2 max-h-[160px] overflow-y-auto no-scrollbar border-t border-slate-800 pt-3">
+                        <button onclick="setMagazinePage(1, 'Horizon Automations', 'COVER PAGE')" class="w-full text-left p-2.5 rounded-lg text-xs bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-between border border-slate-700">
+                            <span>1. Digital Cover Reveal</span> <span class="text-teal-400 font-bold">Read <i class="fa-solid fa-chevron-right ml-1"></i></span>
+                        </button>
+                        <button onclick="setMagazinePage(2, 'Edge AI in Smart Manufacturing', 'PORTFOLIO')" class="w-full text-left p-2.5 rounded-lg text-xs hover:bg-slate-800 text-slate-300 flex items-center justify-between">
+                            <span>2. Edge AI & Factory Integration</span> <span class="text-slate-500">Page 12</span>
+                        </button>
+                        <button onclick="setMagazinePage(3, 'Designing modbus bus lines', 'TUTORIAL')" class="w-full text-left p-2.5 rounded-lg text-xs hover:bg-slate-800 text-slate-300 flex items-center justify-between">
+                            <span>3. Custom Modbus Hardware Guide</span> <span class="text-slate-500">Page 18</span>
+                        </button>
+                        <button onclick="setMagazinePage(4, 'Kinetic Sculpture Portfolios', 'ART & CODE')" class="w-full text-left p-2.5 rounded-lg text-xs hover:bg-slate-800 text-slate-300 flex items-center justify-between">
+                            <span>4. Crossover: Code meets Art</span> <span class="text-slate-500">Page 24</span>
+                        </button>
+                    </div>
+
+                    <div class="flex gap-2 pt-2 border-t border-slate-800">
+                        <button onclick="triggerFileDownload('ISAAC_2026_Full_Edition.pdf')" class="flex-1 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold py-2.5 rounded-lg text-xs text-center">
+                            <i class="fa-solid fa-download mr-1"></i> Full PDF Download
+                        </button>
+                        <button onclick="subscribeNewsletter()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-semibold py-2.5 rounded-lg text-xs">
+                            <i class="fa-solid fa-envelope mr-1"></i> Subscribe Releases
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal 2: Event Registration Modal -->
-    <div id="registrationModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div onclick="closeRegistrationModal()" class="fixed inset-0 bg-slate-950/90 transition-opacity" aria-hidden="true"></div>
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            
-            <div class="inline-block align-bottom bg-slate-900 border border-slate-800 rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full">
-                <div class="bg-slate-950 px-6 py-4 border-b border-slate-800 flex justify-between items-center">
-                    <h3 class="text-base font-bold text-white">Event RSVP Booking</h3>
-                    <button onclick="closeRegistrationModal()" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800">
-                        <i class="fa-solid fa-xmark text-lg"></i>
-                    </button>
-                </div>
-                
-                <form id="rsvpForm" onsubmit="handleRSVPSubmit(event)" class="p-6 space-y-4">
-                    <input type="hidden" id="selectedEventName" name="eventName">
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Selected Event</label>
-                        <input type="text" id="displayEventName" readonly class="w-full bg-slate-950 border border-slate-800/80 rounded-xl px-4 py-3 text-teal-400 font-semibold focus:outline-none text-xs">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Your Full Name</label>
-                        <input type="text" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500 text-xs">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Student Roll Number / Identity</label>
-                        <input type="text" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500 text-xs">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">University Branch</label>
-                        <input type="text" required placeholder="e.g. Mechanical, Robotics, CS" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500 text-xs">
-                    </div>
-                    <button type="submit" class="w-full py-3.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl text-xs transition-all shadow-lg">
-                        Confirm My RSVP Spot <i class="fa-solid fa-check ml-1 text-xs"></i>
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
 
-    <!-- Modal 3: Alumni Connectivity Form -->
-    <div id="alumniModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div onclick="closeAlumniForm()" class="fixed inset-0 bg-slate-950/90 transition-opacity" aria-hidden="true"></div>
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+    <!-- EVENT RESERVATION TICKET MODAL -->
+    <div id="registrationModal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl overflow-hidden p-6 shadow-2xl relative">
+            <button onclick="closeRegistrationModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-lg">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
             
-            <div class="inline-block align-bottom bg-slate-900 border border-slate-800 rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full">
-                <div class="bg-slate-950 px-6 py-4 border-b border-slate-800 flex justify-between items-center">
-                    <h3 class="text-base font-bold text-white">Join the Alumni Network Registry</h3>
-                    <button onclick="closeAlumniForm()" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800">
-                        <i class="fa-solid fa-xmark text-lg"></i>
-                    </button>
-                </div>
-                
-                <form id="alumniForm" onsubmit="handleAlumniSubmit(event)" class="p-6 space-y-4">
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Full Name</label>
-                        <input type="text" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500 text-xs">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Graduation Year</label>
-                        <input type="number" required placeholder="e.g. 2021" min="1990" max="2026" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500 text-xs">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Current Company & Title</label>
-                        <input type="text" required placeholder="e.g. Siemens - Automation Architect" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500 text-xs">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">LinkedIn Profile Link</label>
-                        <input type="url" required placeholder="https://linkedin.com/in/username" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500 text-xs">
-                    </div>
-                    <button type="submit" class="w-full py-3.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl text-xs transition-all shadow-lg">
-                        Submit Registry Application
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal 4: ISA Official Student Membership Form -->
-    <div id="membershipModal" class="fixed inset-0 z-50 hidden overflow-y-auto" role="dialog" aria-modal="true">
-        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div onclick="closeMembershipForm()" class="fixed inset-0 bg-slate-950/90 transition-opacity"></div>
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
+            <span class="inline-block bg-teal-500/10 text-teal-400 border border-teal-500/20 text-[10px] font-bold px-2.5 py-1 rounded-full tracking-wider uppercase mb-4">
+                EVENT REGISTRATION
+            </span>
+            <h3 class="text-xl font-bold text-white mb-1" id="regEventTitle">SCADA Seminaries</h3>
+            <p class="text-xs text-slate-400 mb-6">Reserve your attendance ticket immediately. Passes will be logged in our student database.</p>
             
-            <div class="inline-block align-bottom bg-slate-900 border border-slate-800 rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full">
-                <div class="bg-slate-950 px-6 py-4 border-b border-slate-800 flex justify-between items-center">
-                    <h3 class="text-base font-bold text-white">ISA Membership Form</h3>
-                    <button onclick="closeMembershipForm()" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800">
-                        <i class="fa-solid fa-xmark text-lg"></i>
-                    </button>
+            <form onsubmit="handleRegistrationSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs text-slate-400 font-bold uppercase mb-1">Student Identifier (PRN)</label>
+                    <input type="text" id="regPrn" required placeholder="e.g., 2026XXXX" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-teal-500">
                 </div>
-                
-                <form id="membershipRegForm" onsubmit="handleMembershipSubmit(event)" class="p-6 space-y-4">
-                    <input type="hidden" id="selectedTierName" name="tierName">
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Selected Tier Package</label>
-                        <input type="text" id="displayTierName" readonly class="w-full bg-slate-950 border border-slate-800/85 rounded-xl px-4 py-3 text-teal-400 font-extrabold focus:outline-none text-xs">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Full Name</label>
-                        <input type="text" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500 text-xs">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Institutional Email</label>
-                        <input type="email" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500 text-xs">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Academic Batch (Year)</label>
-                        <select class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500 text-xs">
-                            <option>1st Year undergraduate</option>
-                            <option>2nd Year undergraduate</option>
-                            <option>3rd Year undergraduate</option>
-                            <option>4th Year / Senior undergraduate</option>
-                            <option>Postgraduate Research Scholar</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="w-full py-3.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl text-xs transition-all shadow-lg">
-                        Submit My Membership Request
-                    </button>
-                </form>
-            </div>
+                <div>
+                    <label class="block text-xs text-slate-400 font-bold uppercase mb-1">WhatsApp Contact</label>
+                    <input type="tel" id="regPhone" required placeholder="98XXXXXXXX" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-teal-500">
+                </div>
+                <button type="submit" class="w-full bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold py-3 rounded-xl text-sm transition-colors">
+                    Claim Free Admission Ticket <i class="fa-solid fa-ticket ml-1"></i>
+                </button>
+            </form>
         </div>
     </div>
 
 
-    <!-- ================= FOOTER ================= -->
-    <footer class="bg-slate-950 border-t border-slate-900 py-12 mt-20">
+    <!-- Footer -->
+    <footer class="bg-slate-950 border-t border-slate-900 py-12 mt-20 relative z-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
-                <div class="space-y-4">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-400 font-extrabold text-sm border border-teal-500/20">ISA</div>
-                        <span class="text-base font-bold text-white tracking-tight">ISA Student Section</span>
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                <!-- Branding -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-tr from-teal-500 to-blue-600 flex items-center justify-center">
+                        <span class="text-white font-extrabold text-sm tracking-wider">ISA</span>
                     </div>
-                    <p class="text-xs text-slate-500 leading-relaxed">Fostering smart industrial development and algorithmic engineering platforms across student communities.</p>
-                </div>
-                
-                <div>
-                    <h5 class="text-xs font-bold text-white uppercase tracking-wider mb-4">Quick Links</h5>
-                    <ul class="space-y-2 text-xs text-slate-400">
-                        <li><button onclick="switchTab('home')" class="hover:text-teal-400 transition-colors">Home Base</button></li>
-                        <li><button onclick="switchTab('initiatives')" class="hover:text-teal-400 transition-colors">Initiatives & Projects</button></li>
-                        <li><button onclick="switchTab('community')" class="hover:text-teal-400 transition-colors">Community Team</button></li>
-                        <li><button onclick="switchTab('join')" class="hover:text-teal-400 transition-colors">Become a Member</button></li>
-                    </ul>
+                    <div>
+                        <span class="block text-base font-bold text-white leading-tight">ISA Student Branch</span>
+                        <span class="block text-[10px] text-teal-400 uppercase tracking-widest font-medium">International Society of Automation</span>
+                    </div>
                 </div>
 
-                <div>
-                    <h5 class="text-xs font-bold text-white uppercase tracking-wider mb-4">Featured Publications</h5>
-                    <ul class="space-y-2 text-xs text-slate-400">
-                        <li><button onclick="openMagazineModal()" class="hover:text-teal-400 transition-colors text-left">ISAAC 2026 Issue (PDF Reveal)</button></li>
-                        <li><button onclick="switchTab('initiatives')" class="hover:text-teal-400 transition-colors text-left">Edge AI Articles Hub</button></li>
-                        <li><button onclick="showToast('Older archives are stored offline at university labs.')" class="hover:text-teal-400 transition-colors text-left">2025 Volume 1 Legacy Archive</button></li>
-                    </ul>
+                <!-- Quick Links -->
+                <div class="flex flex-wrap justify-center gap-6 text-xs text-slate-400">
+                    <button onclick="switchTab('home')" class="hover:text-white transition-colors">Home</button>
+                    <button onclick="switchTab('initiatives')" class="hover:text-white transition-colors">Initiatives</button>
+                    <button onclick="switchTab('community')" class="hover:text-white transition-colors">Community</button>
+                    <button onclick="switchTab('join')" class="hover:text-white transition-colors">Join Us</button>
+                    <button onclick="switchTab('help')" class="hover:text-white transition-colors">Help Desk</button>
                 </div>
 
-                <div>
-                    <h5 class="text-xs font-bold text-white uppercase tracking-wider mb-4">Contact & Lab Address</h5>
-                    <p class="text-xs text-slate-500 leading-relaxed mb-2">Systems Engineering Lab, 3rd Floor, West Block Complex, University Campus.</p>
-                    <a href="mailto:isa-support@university.edu" class="text-xs text-teal-400 hover:underline">isa-support@university.edu</a>
-                </div>
-            </div>
-            
-            <div class="border-t border-slate-900 pt-8 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-600 gap-4">
-                <span>© 2026 International Society of Automation (ISA) Student Branch. All rights reserved.</span>
-                <div class="flex gap-4">
-                    <a href="javascript:void(0)" onclick="showToast('Redirecting to official ISA Global...')" class="hover:text-slate-400 transition-colors">ISA Global</a>
-                    <span>•</span>
-                    <a href="javascript:void(0)" onclick="showToast('Redirecting to University Portal...')" class="hover:text-slate-400 transition-colors">University Website</a>
+                <!-- Copyright -->
+                <div class="text-[11px] text-slate-500 text-center md:text-right">
+                    © 2026 ISA Student Section. Managed for Creative Arts, Science & Automation.
                 </div>
             </div>
         </div>
     </footer>
 
 
-    <!-- ================= SCRIPTS & LOGIC ================= -->
     <script>
-        // ------------------ Tab Switch System ------------------
-        function switchTab(tabId) {
-            // Hide all tab views
-            const views = document.querySelectorAll('.tab-view');
-            views.forEach(view => view.classList.add('hidden'));
+        // Database State Engine utilizing LocalStorage for real-time tracking
+        let dbState = {
+            memberships: JSON.parse(localStorage.getItem('isa_memberships')) || [],
+            alumni: JSON.parse(localStorage.getItem('isa_alumni')) || [],
+            queries: JSON.parse(localStorage.getItem('isa_queries')) || [],
+            events: JSON.parse(localStorage.getItem('isa_events')) || []
+        };
+        let activeDbCategory = 'memberships';
 
-            // Show selected view
-            const selectedView = document.getElementById(`${tabId}-view`);
-            if (selectedView) {
-                selectedView.classList.remove('hidden');
+        // Stagger Entry Transitions using Anime.js
+        function runStaggerEntrance(selector) {
+            anime({
+                targets: selector + ' > *',
+                opacity: [0, 1],
+                translateY: [24, 0],
+                delay: anime.stagger(60, {start: 50}),
+                easing: 'easeOutElastic(1, .85)',
+                duration: 900
+            });
+        }
+
+        // Tab switching logic (Supports global routing between principal pages with fluid slide)
+        function switchTab(tabId) {
+            const views = document.querySelectorAll('.tab-view');
+            const targetView = document.getElementById(`${tabId}-view`);
+            
+            // Exit animations using Anime.js on currently active view
+            const currentlyActive = Array.from(views).find(v => !v.classList.contains('hidden'));
+            
+            if (currentlyActive && currentlyActive.id !== `${tabId}-view`) {
+                anime({
+                    targets: currentlyActive,
+                    opacity: [1, 0],
+                    translateY: [0, -10],
+                    duration: 200,
+                    easing: 'linear',
+                    complete: () => {
+                        currentlyActive.classList.add('hidden');
+                        showAndAnimateNewTab(targetView, tabId);
+                    }
+                });
+            } else {
+                showAndAnimateNewTab(targetView, tabId);
+            }
+        }
+
+        function showAndAnimateNewTab(targetView, tabId) {
+            if(!targetView) return;
+            
+            targetView.classList.remove('hidden');
+            
+            // Entrance slide and spring opacity
+            anime({
+                targets: targetView,
+                opacity: [0, 1],
+                translateY: [15, 0],
+                duration: 400,
+                easing: 'easeOutQuad'
+            });
+
+            // Trigger specific page stagger sequences
+            if (tabId === 'community') {
+                runStaggerEntrance('.animate-stagger-group');
+            } else if (tabId === 'initiatives') {
+                runStaggerEntrance('#projectsGrid');
+            } else if (tabId === 'home') {
+                anime({
+                    targets: ['.text-block', '.promo-card-block'],
+                    opacity: [0, 1],
+                    translateY: [30, 0],
+                    delay: anime.stagger(150),
+                    easing: 'easeOutCubic',
+                    duration: 850
+                });
             }
 
-            // Update Desktop Nav Button Visual State
-            const desktopLinks = document.querySelectorAll('.nav-link');
-            desktopLinks.forEach(link => {
-                if (link.getAttribute('data-tab') === tabId) {
-                    link.classList.remove('text-slate-400', 'hover:text-white', 'hover:bg-slate-900/40');
+            // Update desktop nav buttons styling
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                if(link.getAttribute('data-tab') === tabId) {
                     link.classList.add('text-teal-400', 'bg-slate-900/60');
+                    link.classList.remove('text-slate-400', 'hover:text-white', 'hover:bg-slate-900/40');
                 } else {
                     link.classList.remove('text-teal-400', 'bg-slate-900/60');
                     link.classList.add('text-slate-400', 'hover:text-white', 'hover:bg-slate-900/40');
                 }
             });
 
-            // Update Mobile Nav Links Visual State
+            // Update mobile dropdown links styling
             const mobileLinks = document.querySelectorAll('.mobile-nav-link');
             mobileLinks.forEach(link => {
-                if (link.getAttribute('data-tab') === tabId) {
-                    link.classList.remove('text-slate-400', 'hover:text-white', 'hover:bg-slate-900/50');
+                if(link.getAttribute('data-tab') === tabId) {
                     link.classList.add('text-teal-400', 'bg-slate-900');
+                    link.classList.remove('text-slate-400', 'hover:text-white', 'hover:bg-slate-900/50');
                 } else {
                     link.classList.remove('text-teal-400', 'bg-slate-900');
                     link.classList.add('text-slate-400', 'hover:text-white', 'hover:bg-slate-900/50');
                 }
             });
 
-            // Close mobile menu if open
+            // Close mobile menu dropdown if open
             const mobileMenu = document.getElementById('mobile-menu');
             const menuIcon = document.getElementById('menu-icon');
-            if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+            if(mobileMenu) {
                 mobileMenu.classList.add('hidden');
-                menuIcon.classList.remove('fa-xmark');
-                menuIcon.classList.add('fa-bars');
+                if(menuIcon) {
+                    menuIcon.classList.add('fa-bars');
+                    menuIcon.classList.remove('fa-xmark');
+                }
             }
 
-            // Scroll smoothly to top
+            // Scroll to top with easing fluid
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Custom router pathing helpers (Helper to bridge home image clicks with filtered gallery pages)
-        function switchTabAndFilterGallery(tabId) {
-            switchTab(tabId);
-            setTimeout(() => {
-                filterGallery('all');
-                const elementToScroll = document.getElementById('galleryGrid');
-                if (elementToScroll) {
-                    elementToScroll.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            }, 300);
-        }
-
-        // ------------------ Mobile Navigation Controls ------------------
-        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
-            const mobileMenu = document.getElementById('mobile-menu');
-            const menuIcon = document.getElementById('menu-icon');
-            if (mobileMenu.classList.contains('hidden')) {
-                mobileMenu.classList.remove('hidden');
-                menuIcon.classList.remove('fa-bars');
-                menuIcon.classList.add('fa-xmark');
-            } else {
-                mobileMenu.classList.add('hidden');
-                menuIcon.classList.remove('fa-xmark');
-                menuIcon.classList.add('fa-bars');
-            }
+        // Mousemove Event on glowing orbs to follow cursor subtly
+        document.addEventListener('mousemove', (e) => {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            
+            anime({
+                targets: '#ambient-glow-1',
+                left: (e.clientX * 0.05) - 100,
+                top: (e.clientY * 0.05) + 100,
+                duration: 1200,
+                easing: 'easeOutQuad'
+            });
+            anime({
+                targets: '#ambient-glow-2',
+                right: -(e.clientX * 0.05) - 100,
+                top: (e.clientY * 0.05) + height * 0.4,
+                duration: 1200,
+                easing: 'easeOutQuad'
+            });
         });
 
-        // ------------------ Initiatives inner toggler ------------------
-        function switchInitiativeTab(subTabId) {
-            // Hide all sub tab contents
-            const contents = ['projects', 'events', 'articles'];
-            contents.forEach(id => {
-                document.getElementById(`init-content-${id}`).classList.add('hidden');
-                // reset styling on buttons
-                const btn = document.getElementById(`init-btn-${id}`);
-                btn.classList.remove('bg-teal-500', 'text-slate-950');
-                btn.classList.add('text-slate-400', 'hover:text-white');
-            });
-
-            // Show target
-            document.getElementById(`init-content-${subTabId}`).classList.remove('hidden');
-            const targetBtn = document.getElementById(`init-btn-${subTabId}`);
-            targetBtn.classList.remove('text-slate-400', 'hover:text-white');
-            targetBtn.classList.add('bg-teal-500', 'text-slate-950');
+        function switchTabAndFilterGallery(tabId) {
+            switchTab(tabId);
+            filterGallery('all');
         }
 
-        // ------------------ Running Projects Filters & Search ------------------
-        let currentProjectCategory = 'All';
+        // Mobile Menu Toggler
+        document.addEventListener('DOMContentLoaded', () => {
+            const btn = document.getElementById('mobile-menu-btn');
+            const menu = document.getElementById('mobile-menu');
+            const icon = document.getElementById('menu-icon');
+
+            if(btn && menu && icon) {
+                btn.addEventListener('click', () => {
+                    menu.classList.toggle('hidden');
+                    if (menu.classList.contains('hidden')) {
+                        icon.classList.add('fa-bars');
+                        icon.classList.remove('fa-xmark');
+                    } else {
+                        icon.classList.remove('fa-bars');
+                        icon.classList.add('fa-xmark');
+                    }
+                });
+            }
+            // Seed base mock entries inside table console on load
+            renderConsoleTable();
+        });
+
+        // Dynamic Toast Notification Generator
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            toast.className = `p-4 rounded-xl shadow-lg border text-xs font-semibold flex items-center justify-between gap-3 pointer-events-auto transition-all duration-300 transform translate-x-12 opacity-0 max-w-sm ${
+                type === 'success' 
+                ? 'bg-slate-900 border-teal-500/30 text-teal-400' 
+                : 'bg-slate-900 border-slate-800 text-slate-100'
+            }`;
+
+            const icon = type === 'success' ? 'fa-circle-check' : 'fa-circle-info';
+            toast.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid ${icon}"></i>
+                    <span>${message}</span>
+                </div>
+                <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            `;
+
+            container.appendChild(toast);
+
+            // Anime spring dynamic translation entry
+            anime({
+                targets: toast,
+                translateX: [50, 0],
+                opacity: [0, 1],
+                easing: 'easeOutElastic(1, .85)',
+                duration: 500
+            });
+
+            // Self Destruct
+            setTimeout(() => {
+                anime({
+                    targets: toast,
+                    translateX: [0, 100],
+                    opacity: [1, 0],
+                    duration: 350,
+                    easing: 'easeInBack',
+                    complete: () => toast.remove()
+                });
+            }, 4000);
+        }
+
+        // ================= INITIATIVES ENGINE FUNCTIONS =================
+        function switchInitiativeTab(subTab) {
+            const btnProjects = document.getElementById('init-btn-projects');
+            const btnEvents = document.getElementById('init-btn-events');
+            const btnArticles = document.getElementById('init-btn-articles');
+
+            const contentProjects = document.getElementById('init-content-projects');
+            const contentEvents = document.getElementById('init-content-events');
+            const contentArticles = document.getElementById('init-content-articles');
+
+            // Toggle screens
+            const contents = [contentProjects, contentEvents, contentArticles];
+            const buttons = [btnProjects, btnEvents, btnArticles];
+            
+            contents.forEach(c => c.classList.add('hidden'));
+            buttons.forEach(btn => {
+                btn.className = "flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all duration-200 text-slate-400 hover:text-white";
+            });
+
+            let activeContent;
+            if (subTab === 'projects') {
+                activeContent = contentProjects;
+                btnProjects.className = "flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all duration-200 bg-teal-500 text-slate-950 shadow";
+            } else if (subTab === 'events') {
+                activeContent = contentEvents;
+                btnEvents.className = "flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all duration-200 bg-teal-500 text-slate-950 shadow";
+            } else if (subTab === 'articles') {
+                activeContent = contentArticles;
+                btnArticles.className = "flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all duration-200 bg-teal-500 text-slate-950 shadow";
+            }
+
+            activeContent.classList.remove('hidden');
+            
+            // Anime.js trigger tab sequence stagger
+            anime({
+                targets: activeContent,
+                opacity: [0, 1],
+                translateY: [15, 0],
+                duration: 300,
+                easing: 'easeOutQuad'
+            });
+        }
+
+        // Projects Filter System
+        let currentProjCategory = 'All';
 
         function filterProjectCategory(category) {
-            currentProjectCategory = category;
-            
-            // Highlight matching filter button
+            currentProjCategory = category;
             const buttons = document.querySelectorAll('.proj-cat-btn');
+            
             buttons.forEach(btn => {
-                if (btn.innerText.includes(category) || (category === 'All' && btn.innerText.includes('All'))) {
+                if (btn.innerText.includes(category === 'All' ? 'All' : category)) {
                     btn.className = "proj-cat-btn px-4 py-2 bg-teal-500/10 text-teal-400 border border-teal-500/20 rounded-lg text-xs font-semibold whitespace-nowrap";
                 } else {
                     btn.className = "proj-cat-btn px-4 py-2 bg-slate-900 text-slate-400 border border-slate-800 rounded-lg text-xs font-semibold hover:text-white hover:bg-slate-800 whitespace-nowrap";
@@ -1279,16 +1777,17 @@
         }
 
         function filterProjects() {
-            const searchQuery = document.getElementById('projectSearch').value.toLowerCase();
+            const query = document.getElementById('projectSearch').value.toLowerCase();
             const cards = document.querySelectorAll('.project-card');
 
             cards.forEach(card => {
-                const category = card.getAttribute('data-category');
                 const name = card.getAttribute('data-name');
-                const matchesCategory = (currentProjectCategory === 'All' || category === currentProjectCategory);
-                const matchesSearch = name.includes(searchQuery);
+                const cat = card.getAttribute('data-category');
+                
+                const matchesQuery = name.includes(query);
+                const matchesCategory = (currentProjCategory === 'All') || (cat === currentProjCategory);
 
-                if (matchesCategory && matchesSearch) {
+                if (matchesQuery && matchesCategory) {
                     card.classList.remove('hidden');
                 } else {
                     card.classList.add('hidden');
@@ -1296,20 +1795,19 @@
             });
         }
 
-        // ------------------ Photo Gallery Filter System ------------------
+        // ================= COMMUNITY GALLERY LOGIC =================
         function filterGallery(tag) {
-            // Update filter button visuals
+            const items = document.querySelectorAll('.gallery-item');
             const buttons = document.querySelectorAll('.gallery-filter-btn');
+
             buttons.forEach(btn => {
-                if (btn.id === `filter-btn-${tag}`) {
-                    btn.className = "gallery-filter-btn px-4 py-2 bg-teal-500 text-slate-950 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors";
+                if (btn.innerText.toLowerCase() === tag) {
+                    btn.className = "gallery-filter-btn flex-1 py-2 px-3 rounded-lg text-xs font-semibold bg-teal-500 text-slate-950 transition-all";
                 } else {
-                    btn.className = "gallery-filter-btn px-4 py-2 bg-slate-900 text-slate-400 border border-slate-800 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors hover:text-white";
+                    btn.className = "gallery-filter-btn flex-1 py-2 px-3 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all";
                 }
             });
 
-            // Filter Gallery Items
-            const items = document.querySelectorAll('.gallery-item');
             items.forEach(item => {
                 const itemTag = item.getAttribute('data-tag');
                 if (tag === 'all' || itemTag === tag) {
@@ -1318,117 +1816,298 @@
                     item.classList.add('hidden');
                 }
             });
+
+            // Smooth scale grid animations
+            anime({
+                targets: '.gallery-item:not(.hidden)',
+                scale: [0.9, 1],
+                opacity: [0, 1],
+                delay: anime.stagger(40),
+                duration: 400,
+                easing: 'easeOutQuad'
+            });
         }
 
-        // ------------------ Help FAQ Toggles ------------------
-        function toggleFAQ(index) {
-            const answer = document.getElementById(`faq-ans-${index}`);
-            const icon = document.getElementById(`faq-icon-${index}`);
+        // ================= DIGITAL MAGAZINE MODAL FUNCTIONS =================
+        function openMagazineModal() {
+            const modal = document.getElementById('magazineModal');
+            modal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
             
-            if (answer.classList.contains('hidden')) {
-                answer.classList.remove('hidden');
-                icon.classList.remove('fa-chevron-down');
-                icon.classList.add('fa-chevron-up');
-            } else {
-                answer.classList.add('hidden');
-                icon.classList.remove('fa-chevron-up');
-                icon.classList.add('fa-chevron-down');
+            anime({
+                targets: '#magazineModal .relative',
+                scale: [0.9, 1],
+                opacity: [0, 1],
+                easing: 'easeOutBack',
+                duration: 400
+            });
+        }
+
+        function closeMagazineModal() {
+            anime({
+                targets: '#magazineModal .relative',
+                scale: [1, 0.9],
+                opacity: [1, 0],
+                easing: 'easeInBack',
+                duration: 250,
+                complete: () => {
+                    document.getElementById('magazineModal').classList.add('hidden');
+                    document.body.classList.remove('overflow-hidden');
+                }
+            });
+        }
+
+        const magazinePageImages = {
+            1: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=400",
+            2: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=400",
+            3: "https://images.unsplash.com/photo-1555680202-c86f0e12f086?auto=format&fit=crop&q=80&w=400",
+            4: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=400"
+        };
+
+        function setMagazinePage(pageNum, title, badgeText) {
+            const img = document.getElementById('magazinePageImg');
+            const badge = document.getElementById('pageBadge');
+            const heading = document.getElementById('pageTitle');
+
+            if(img && badge && heading) {
+                anime({
+                    targets: img,
+                    scale: 0.95,
+                    opacity: 0.3,
+                    duration: 150,
+                    easing: 'easeInQuad',
+                    complete: () => {
+                        img.src = magazinePageImages[pageNum] || magazinePageImages[1];
+                        badge.innerText = badgeText;
+                        heading.innerText = title;
+                        
+                        anime({
+                            targets: img,
+                            scale: 1,
+                            opacity: 1,
+                            duration: 200,
+                            easing: 'easeOutQuad'
+                        });
+                    }
+                });
             }
         }
 
-        // ------------------ Toast Messaging Alert Helper ------------------
-        function showToast(message, type = 'info') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
+        // ================= STREAMING_CHUNK: LOCAL DB CONSOLE FUNCTIONALITY =================
+        function pushToLocalStorage(category, item) {
+            dbState[category].unshift(item);
+            localStorage.setItem(`isa_${category}`, JSON.stringify(dbState[category]));
+            renderConsoleTable();
+        }
+
+        function filterDatabase(category) {
+            activeDbCategory = category;
             
-            const bgColor = type === 'success' ? 'bg-emerald-950 border-emerald-500/30 text-emerald-400' : 'bg-slate-900 border-teal-500/30 text-slate-200';
-            const icon = type === 'success' ? 'fa-circle-check text-emerald-400' : 'fa-circle-info text-teal-400';
+            // Highlight Buttons
+            ['memberships', 'alumni', 'queries', 'events'].forEach(cat => {
+                const btn = document.getElementById(`db-btn-${cat}`);
+                if (cat === category) {
+                    btn.className = "px-4 py-2 bg-teal-500/10 text-teal-400 border border-teal-500/20 rounded-lg text-xs font-semibold hover:bg-teal-500/20";
+                } else {
+                    btn.className = "px-4 py-2 bg-slate-950 text-slate-400 border border-slate-800 rounded-lg text-xs font-semibold hover:bg-slate-800";
+                }
+            });
 
-            toast.className = `p-4 rounded-xl border ${bgColor} flex items-center gap-3 shadow-2xl transition-all duration-300 transform translate-x-12 opacity-0 max-w-sm pointer-events-auto`;
-            toast.innerHTML = `
-                <i class="fa-solid ${icon} text-lg shrink-0"></i>
-                <span class="text-xs font-semibold leading-normal">${message}</span>
-                <button class="ml-auto text-slate-500 hover:text-white text-sm" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i></button>
-            `;
+            renderConsoleTable();
+        }
+
+        function renderConsoleTable() {
+            const tbody = document.getElementById('databaseTableBody');
+            if(!tbody) return;
+
+            const items = dbState[activeDbCategory];
+            if(items.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="p-8 text-center text-slate-500 italic">No submissions captured yet in this section. Submit a website form to see it live!</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = items.map((item, index) => {
+                let col1 = item.timestamp || new Date().toLocaleTimeString();
+                let col2 = '';
+                let col3 = '';
+
+                if (activeDbCategory === 'memberships') {
+                    col2 = `<strong>${item.name}</strong> (${item.email})`;
+                    col3 = `${item.year} • Branch: ${item.branch}`;
+                } else if (activeDbCategory === 'alumni') {
+                    col2 = `<strong>${item.name}</strong>`;
+                    col3 = `Email: ${item.email}`;
+                } else if (activeDbCategory === 'queries') {
+                    col2 = `<strong>Category:</strong> ${item.category} <br> Email: ${item.email}`;
+                    col3 = `<span class="italic font-normal">"${item.message}"</span>`;
+                } else if (activeDbCategory === 'events') {
+                    col2 = `<strong>${item.event}</strong>`;
+                    col3 = `PRN: ${item.prn} <br> WhatsApp: ${item.phone}`;
+                }
+
+                return `
+                    <tr class="border-b border-slate-900/60 hover:bg-slate-900/30 transition-all">
+                        <td class="p-3 font-mono text-teal-400/80 text-[10px]">${col1}</td>
+                        <td class="p-3">${col2}</td>
+                        <td class="p-3 text-slate-400">${col3}</td>
+                        <td class="p-3">
+                            <button onclick="deleteDbItem('${activeDbCategory}', ${index})" class="text-slate-500 hover:text-red-400 p-1.5 transition-colors" title="Delete record">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function deleteDbItem(category, index) {
+            dbState[category].splice(index, 1);
+            localStorage.setItem(`isa_${category}`, JSON.stringify(dbState[category]));
+            showToast('Submission deleted from local panel database.', 'info');
+            renderConsoleTable();
+        }
+
+        function clearCurrentCategory() {
+            dbState[activeDbCategory] = [];
+            localStorage.setItem(`isa_${activeDbCategory}`, JSON.stringify(dbState[activeDbCategory]));
+            showToast(`Cleared all items inside ${activeDbCategory}.`, 'info');
+            renderConsoleTable();
+        }
+
+        function loadMockData() {
+            // Seed template data
+            dbState.memberships = [
+                {timestamp: '14:42:15', name: 'Kabir Sengupta', email: 'kabir.s@extc.edu', year: 'Third Year', branch: 'EXTC'},
+                {timestamp: '12:05:01', name: 'Tanvi Nair', email: 'tanvi.nair@it.edu', year: 'Second Year', branch: 'IT'}
+            ];
+            dbState.alumni = [
+                {timestamp: '10:14:00', name: 'Rohan Joshi', email: 'rohan.joshi@siemens.com'},
+                {timestamp: '09:21:55', name: 'Prerna Shinde', email: 'prerna.s@intel.com'}
+            ];
+            dbState.queries = [
+                {timestamp: '16:01:24', category: 'Article Pitch for ISAAC', email: 'author1@gmail.com', message: 'I want to submit an article detailing edge servers in smart home systems.'}
+            ];
+            dbState.events = [
+                {timestamp: '15:10:30', event: 'Regional Automation Conclave', prn: '20268841', phone: '9845112521'}
+            ];
+
+            localStorage.setItem('isa_memberships', JSON.stringify(dbState.memberships));
+            localStorage.setItem('isa_alumni', JSON.stringify(dbState.alumni));
+            localStorage.setItem('isa_queries', JSON.stringify(dbState.queries));
+            localStorage.setItem('isa_events', JSON.stringify(dbState.events));
+
+            showToast('Pre-populated database with standard user mock values!', 'success');
+            renderConsoleTable();
+        }
+
+
+        // ================= FORM SUBMISSION DISPATCH PIPELINES =================
+        function handleAlumniSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('alumniName').value;
+            const email = document.getElementById('alumniEmail').value;
             
-            container.appendChild(toast);
-            
-            // Trigger animation frame trigger
-            setTimeout(() => {
-                toast.classList.remove('translate-x-12', 'opacity-0');
-            }, 50);
+            const timestamp = new Date().toLocaleTimeString();
+            pushToLocalStorage('alumni', { timestamp, name, email });
 
-            // Trigger auto destroy
-            setTimeout(() => {
-                toast.classList.add('translate-x-12', 'opacity-0');
-                setTimeout(() => {
-                    toast.remove();
-                }, 300);
-            }, 4000);
-        }
-
-        // ------------------ Modals & Popups Controls ------------------
-        
-        // Isaac 2026 Digital Magazine
-        function openMagazineModal() {
-            document.getElementById('magazineModal').classList.remove('hidden');
-        }
-        function closeMagazineModal() {
-            document.getElementById('magazineModal').classList.add('hidden');
-        }
-
-        // Event Registration
-        function openRegistrationModal(eventName) {
-            document.getElementById('selectedEventName').value = eventName;
-            document.getElementById('displayEventName').value = eventName;
-            document.getElementById('registrationModal').classList.remove('hidden');
-        }
-        function closeRegistrationModal() {
-            document.getElementById('rsvpForm').reset();
-            document.getElementById('registrationModal').classList.add('hidden');
-        }
-        function handleRSVPSubmit(event) {
-            event.preventDefault();
-            const eventName = document.getElementById('selectedEventName').value;
-            closeRegistrationModal();
-            showToast(`Spot reserved successfully for: "${eventName}"! Confirmation code sent to email.`, 'success');
-        }
-
-        // Alumni Form
-        function openAlumniForm() {
-            document.getElementById('alumniModal').classList.remove('hidden');
-        }
-        function closeAlumniForm() {
+            showToast(`Thank you, ${name}! You have been registered in the database.`, 'success');
             document.getElementById('alumniForm').reset();
-            document.getElementById('alumniModal').classList.add('hidden');
-        }
-        function handleAlumniSubmit(event) {
-            event.preventDefault();
-            closeAlumniForm();
-            showToast('Thank you for connecting! Your profile is submitted for Alumni Board review.', 'success');
         }
 
-        // Membership Tiers Form
-        function openMembershipForm(tierName) {
-            document.getElementById('selectedTierName').value = tierName;
-            document.getElementById('displayTierName').value = tierName;
-            document.getElementById('membershipModal').classList.remove('hidden');
-        }
-        function closeMembershipForm() {
-            document.getElementById('membershipRegForm').reset();
-            document.getElementById('membershipModal').classList.add('hidden');
-        }
-        function handleMembershipSubmit(event) {
-            event.preventDefault();
-            closeMembershipForm();
-            showToast('Membership application received! Check email for next steps & local lab entry codes.', 'success');
+        function handleMembershipSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('memName').value;
+            const email = document.getElementById('memEmail').value;
+            const year = document.getElementById('memYear').value;
+            const branch = document.getElementById('memBranch').value;
+            
+            const timestamp = new Date().toLocaleTimeString();
+            pushToLocalStorage('memberships', { timestamp, name, email, year, branch });
+
+            showToast(`Application submitted successfully for ${name}!`, 'success');
+            document.getElementById('membershipForm').reset();
         }
 
-        // General Help Desk Form
-        function handleQuerySubmit(event) {
-            event.preventDefault();
+        function handleQuerySubmit(e) {
+            e.preventDefault();
+            const email = document.getElementById('queryEmail').value;
+            const category = document.getElementById('queryCat').value;
+            const message = document.getElementById('queryMsg').value;
+            
+            const timestamp = new Date().toLocaleTimeString();
+            pushToLocalStorage('queries', { timestamp, email, category, message });
+
+            showToast('Query ticket logged successfully. View response below inside the panel!', 'success');
             document.getElementById('helpForm').reset();
-            showToast('Help Desk ticket generated successfully! Check inbox for references.', 'success');
+        }
+
+        // ================= EVENT ADMISSION RESERVATION REGISTRY =================
+        function openRegistrationModal(eventTitle) {
+            document.getElementById('regEventTitle').innerText = eventTitle;
+            document.getElementById('registrationModal').classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+        }
+
+        function closeRegistrationModal() {
+            document.getElementById('registrationModal').classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+
+        function handleRegistrationSubmit(e) {
+            e.preventDefault();
+            const prn = document.getElementById('regPrn').value;
+            const phone = document.getElementById('regPhone').value;
+            const event = document.getElementById('regEventTitle').innerText;
+            
+            const timestamp = new Date().toLocaleTimeString();
+            pushToLocalStorage('events', { timestamp, event, prn, phone });
+
+            showToast(`Pass Reserved Successfully for PRN: ${prn}`, 'success');
+            closeRegistrationModal();
+            document.getElementById('regPrn').value = '';
+            document.getElementById('regPhone').value = '';
+        }
+
+        function triggerFileDownload(fileName) {
+            showToast(`Starting physical document download wrapper: "${fileName}"`, 'success');
+        }
+
+        function subscribeNewsletter() {
+            showToast('Subscribed to future digital releases!', 'success');
+        }
+
+        // FAQ accordion toggle logic
+        function toggleFaq(id) {
+            const content = document.getElementById(`${id}-content`);
+            const icon = document.getElementById(`${id}-icon`);
+
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                icon.classList.add('rotate-180');
+                anime({
+                    targets: content,
+                    height: ['0px', 'auto'],
+                    opacity: [0, 1],
+                    duration: 300,
+                    easing: 'easeOutQuad'
+                });
+            } else {
+                anime({
+                    targets: content,
+                    height: '0px',
+                    opacity: 0,
+                    duration: 200,
+                    easing: 'easeInQuad',
+                    complete: () => {
+                        content.classList.add('hidden');
+                        icon.classList.remove('rotate-180');
+                    }
+                });
+            }
         }
     </script>
 </body>
